@@ -17,13 +17,12 @@ export async function nodeKeyGenVrfCommand(
   options: NodeKeyGenVrfParams
 ): Promise<Account> {
   const { poolName, cliPath } = options;
-  const vkey = `tmp/priv/pool/${poolName}/${poolName}.vrf.vkey`;
-  const skey = `tmp/priv/pool/${poolName}/${poolName}.vrf.skey`;
+  const vkey = `tmp/${poolName}.vrf.vkey`;
+  const skey = `tmp/${poolName}.vrf.skey`;
   if (await checkFileExists(vkey))
     return Promise.reject(`${vkey} file already exists`);
   if (await checkFileExists(skey))
     return Promise.reject(`${skey} file already exists`);
-  await exec(`mkdir -p tmp/priv/pool/${poolName}`);
   await exec(buildCommand(cliPath, vkey, skey));
   return {
     vkey,

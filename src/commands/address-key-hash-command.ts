@@ -7,7 +7,7 @@ export interface AddressKeyGenParams {
 
 const buildCommand = (cliPath: string, account: string): string => {
   return `${cliPath} address key-hash \
-                              --payment-verification-key-file tmp/priv/wallet/${account}/${account}.payment.vkey \
+                              --payment-verification-key-file tmp/${account}.payment.vkey \
                           `;
 };
 

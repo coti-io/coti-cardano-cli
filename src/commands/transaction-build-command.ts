@@ -122,8 +122,7 @@ export async function transactionBuildCommand(
     ? `--witness-override ${transaction.witnessOverride}`
     : '';
 
-  const protocolParametersPath =
-    'tmp/protocolParametersPath/protocol-parameters.json';
+  const protocolParametersPath = 'tmp/protocol-parameters.json';
   await fs.writeFile(protocolParametersPath, JSON.stringify(protocolParams), {
     flag: 'wx',
   });
@@ -152,8 +151,7 @@ export async function transactionBuildCommand(
       networkParam,
       slot,
       filePath,
-      protocolParametersPath:
-        'tmp/protocolParametersPath/protocol-parameters.json',
+      protocolParametersPath,
       changeAddressString,
       era,
     })

@@ -6,7 +6,7 @@ export interface StakePoolIdParams {
 }
 
 const buildCommand = (cliPath: string, poolName: string): string => {
-  return `${cliPath} stake-pool id --cold-verification-key-file tmp/priv/pool/${poolName}/${poolName}.node.vkey`;
+  return `${cliPath} stake-pool id --cold-verification-key-file tmp/${poolName}.node.vkey`;
 };
 
 export async function stakePoolIdCommand(

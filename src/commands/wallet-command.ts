@@ -17,15 +17,15 @@ export async function walletCommand(options: WalletParams): Promise<Wallet> {
   const paymentAddr = 'No payment keys generated';
   const stakingAddr = 'No staking keys generated';
 
-  await fs.readFile(`tmp/priv/wallet/${account}/${account}.payment.addr`);
+  await fs.readFile(`tmp/${account}.payment.addr`);
 
-  await fs.readFile(`tmp/priv/wallet/${account}/${account}.stake.addr`);
+  await fs.readFile(`tmp/${account}.stake.addr`);
 
-  const files = await fs.readdir(`tmp/priv/wallet/${account}`);
+  const files = await fs.readdir(`tmp/`);
   const keysPath = {};
   files.forEach(file => {
     const name = file.split('.')[1] + '.' + file.split('.')[2];
-    setKeys(keysPath, name, `tmp/priv/wallet/${account}/${file}`);
+    setKeys(keysPath, name, `tmp/${account}.${file}`);
   });
 
   const balance = async () => {

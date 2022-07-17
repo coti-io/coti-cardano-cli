@@ -63,7 +63,7 @@ export async function stakePoolRegistrationCommand(
   const owners = ownerToString(options.owners);
   const relays = relayToString(options.relays);
 
-  const filePath = `tmp/priv/pool/${poolName}/${poolName}.pool.cert`;
+  const filePath = `tmp/${poolName}.pool.cert`;
   await exec(
     buildCommand(cliPath, poolName, options, owners, relays, network, filePath)
   );

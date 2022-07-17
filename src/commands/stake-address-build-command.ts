@@ -13,7 +13,7 @@ const buildCommand = (
   account: string
 ): string => {
   return `${cliPath} stake-address build \
-                        --staking-verification-key-file tmp/priv/wallet/${account}/${account}.stake.vkey \
+                        --staking-verification-key-file tmp/${account}.stake.vkey \
                         --out-file ${filePath} \
                         ${network}
                     `;
@@ -23,7 +23,7 @@ export async function stakeAddressBuildCommand(
   options: StakeAddressBuildParams
 ): Promise<string> {
   const { account, cliPath, network } = options;
-  const filePath = `tmp/priv/wallet/${account}/${account}.stake.addr`;
+  const filePath = `tmp/${account}.stake.addr`;
   await exec(buildCommand(cliPath, network, filePath, account));
 
   const fileContent = await readFile(filePath);

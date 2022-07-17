@@ -24,7 +24,7 @@ export async function stakePoolDeregistrationCommand(
   input: StakePoolDeregistrationParams
 ): Promise<JSONValue> {
   const { cliPath, poolName, epoch } = input;
-  const filePath = `tmp/priv/pool/${poolName}/${poolName}.pool.cert`;
+  const filePath = `tmp/${poolName}.pool.cert`;
   await exec(buildCommand(cliPath, poolName, epoch, filePath));
 
   const fileContent = readFile(filePath);

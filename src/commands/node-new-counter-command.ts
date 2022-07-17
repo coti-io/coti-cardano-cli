@@ -12,9 +12,9 @@ const buildCommand = (
   counter: string
 ): string => {
   return `${cliPath} node new-counter \
-                        --cold-verification-key-file tmp/priv/pool/${poolName}/${poolName}.node.vkey \
+                        --cold-verification-key-file tmp/${poolName}.node.vkey \
                         --counter-value ${counter} \
-                        --operational-certificate-issue-counter-file tmp/priv/pool/${poolName}/${poolName}.node.counter
+                        --operational-certificate-issue-counter-file tmp/${poolName}.node.counter
                     `;
 };
 
@@ -22,7 +22,6 @@ export async function nodeNewCounterCommand(
   options: NodeNewCounterParams
 ): Promise<string> {
   const { cliPath, poolName, counter } = options;
-  await exec(`mkdir -p tmp/priv/pool/${poolName}`);
   await exec(buildCommand(cliPath, poolName, counter));
-  return `tmp/priv/pool/${poolName}/${poolName}.node.counter`;
+  return `tmp/${poolName}.node.counter`;
 }

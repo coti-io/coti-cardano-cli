@@ -23,16 +23,15 @@ export async function nodeKeyGenCommand(
   options: NodeKeyGenParams
 ): Promise<Account> {
   const { cliPath, poolName } = options;
-  const vkey = `tmp/priv/pool/${poolName}/${poolName}.node.vkey`;
-  const skey = `tmp/priv/pool/${poolName}/${poolName}.node.skey`;
-  const counter = `tmp/priv/pool/${poolName}/${poolName}.node.counter`;
+  const vkey = `tmp/${poolName}.node.vkey`;
+  const skey = `tmp/${poolName}.node.skey`;
+  const counter = `tmp/${poolName}.node.counter`;
   if (await checkFileExists(vkey))
     return Promise.reject(`${vkey} file already exists`);
   if (await checkFileExists(skey))
     return Promise.reject(`${skey} file already exists`);
   if (await checkFileExists(counter))
     return Promise.reject(`${counter} file already exists`);
-  await exec(`mkdir -p tmp/priv/pool/${poolName}`);
   await exec(buildCommand(cliPath, vkey, skey, counter));
   return {
     vkey,

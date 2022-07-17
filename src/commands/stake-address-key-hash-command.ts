@@ -7,7 +7,7 @@ export interface StakeAddressKeyHashParams {
 
 const buildCommand = (cliPath: string, account: string): string => {
   return `${cliPath} stake-address key-hash \
-                        --staking-verification-key-file tmp/priv/wallet/${account}/${account}.stake.vkey \
+                        --staking-verification-key-file tmp/${account}.stake.vkey \
                     `;
 };
 
