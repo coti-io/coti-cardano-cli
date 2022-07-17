@@ -1,6 +1,5 @@
 import {
   auxScriptToString,
-  buildRandomFilePath,
   certToString,
   deleteFile,
   exec,

@@ -1,4 +1,4 @@
-import { buildRandomFilePath, setKeys } from '../helpers';
+import { setKeys } from '../helpers';
 import { StakeAddressInfo, Wallet } from '../interfaces';
 import { promises as fs } from 'fs';
 import Big from 'big.js';

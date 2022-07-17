@@ -1,4 +1,4 @@
-import { buildRandomFilePath, deleteFile, exec, readFile } from '../helpers';
+import { deleteFile, exec, readFile } from '../helpers';
 import { JSONValue } from '../types';
 
 export interface StakeAddressDeregistrationParams {

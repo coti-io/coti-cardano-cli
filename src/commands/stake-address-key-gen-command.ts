@@ -1,10 +1,4 @@
-import {
-  buildRandomFilePath,
-  checkFileExists,
-  deleteFile,
-  exec,
-  readFile,
-} from '../helpers';
+import { checkFileExists, deleteFile, exec, readFile } from '../helpers';
 import { Account } from '../interfaces';
 
 export interface StakeAddressKeyGenParams {

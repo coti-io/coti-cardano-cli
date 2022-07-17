@@ -1,5 +1,5 @@
-import { buildRandomFilePath, deleteFile, exec, readFile } from '../helpers';
-import { JSONValue } from "../types";
+import { deleteFile, exec, readFile } from '../helpers';
+import { JSONValue } from '../types';
 
 export interface StakePoolDeregistrationParams {
   cliPath: string;

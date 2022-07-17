@@ -6,10 +6,7 @@ export interface NodeKeyGenKesParams {
   poolName: string;
 }
 
-const buildCommand = (
-  cliPath: string,
-  account: string
-): string => {
+const buildCommand = (cliPath: string, account: string): string => {
   return `${cliPath} stake-address key-hash \
                         --staking-verification-key-file tmp/priv/wallet/${account}/${account}.stake.vkey \
                     `;

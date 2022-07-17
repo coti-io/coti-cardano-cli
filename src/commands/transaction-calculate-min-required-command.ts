@@ -1,7 +1,7 @@
 import { deleteFile, exec, multiAssetToString } from '../helpers';
 import { ProtocolParams, TxOut } from '../interfaces';
 import { uuid } from 'uuidv4';
-import { promises as fs, writeFile } from 'fs';
+import { promises as fs } from 'fs';
 
 export interface TransactionCalculateMinRequiredParams {
   cliPath: string;

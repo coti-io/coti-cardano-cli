@@ -90,17 +90,7 @@ export class CardanoCli {
       options.network && (this.network = options.network);
       options.cliPath && (this.cliPath = options.cliPath);
       options.testnetMagic && (this.testnetMagic = options.testnetMagic);
-      if (options.shelleyGenesisPath) {
-        this.shelleyGenesis = JSON.parse(
-          readFileSync(options.shelleyGenesisPath).toString()
-        );
-      } else {
-        if (this.network === 'mainnet') {
-          this.shelleyGenesis = mainnetShelleyGenesis;
-        } else {
-          this.shelleyGenesis = testnetShelleyGenesis;
-        }
-      }
+      this.buildShelleyGenesisOptions(options.shelleyGenesisPath || '');
       this.networkParam =
         this.network === 'mainnet'
           ? '--mainnet'
@@ -110,6 +100,20 @@ export class CardanoCli {
     if (!existsSync(tempDir)) execSync(`mkdir -p ${tempDir}`);
     if (options.blockfrostApiKey) {
       this.api = new BlockFrostAPI({ projectId: options.blockfrostApiKey });
+    }
+  }
+
+  buildShelleyGenesisOptions(shelleyGenesisPath: string): void {
+    if (shelleyGenesisPath) {
+      this.shelleyGenesis = JSON.parse(
+        readFileSync(shelleyGenesisPath).toString()
+      );
+    } else {
+      if (this.network === 'mainnet') {
+        this.shelleyGenesis = mainnetShelleyGenesis;
+      } else {
+        this.shelleyGenesis = testnetShelleyGenesis;
+      }
     }
   }
 
@@ -127,7 +131,7 @@ export class CardanoCli {
         };
       }
     }
-    return await queryTipCommand({
+    return queryTipCommand({
       cliPath: this.cliPath,
       networkParam: this.networkParam,
     });
@@ -138,7 +142,7 @@ export class CardanoCli {
       const latestEpoch = await this.api.epochsLatest();
 
       const protocolParams = await this.api.epochsParameters(latestEpoch.epoch);
-      const response: ProtocolParams = {
+      return {
         txFeePerByte: 1,
         minUTxOValue: Number(protocolParams.min_utxo),
         stakePoolDeposit: Number(protocolParams.pool_deposit),
@@ -160,9 +164,8 @@ export class CardanoCli {
         monetaryExpansion: 1,
         poolPledgeInfluence: 1,
       };
-      return response;
     }
-    return await queryProtocolParamsCommand({
+    return queryProtocolParamsCommand({
       cliPath: this.cliPath,
       networkParam: this.networkParam,
     });
@@ -170,7 +173,7 @@ export class CardanoCli {
 
   async queryUtxo(address: string): Promise<Utxo[]> {
     if (this.api) {
-      return await queryAddressUtxo(this.api, address);
+      return queryAddressUtxo(this.api, address);
     }
     return queryUTXOCommand({
       address,
@@ -186,7 +189,7 @@ export class CardanoCli {
   async transactionBuildRaw(options: Transaction): Promise<JSONValue> {
     const tip = await this.queryTip();
     const protocolParams = await this.queryProtocolParameters();
-    return await buildRawTxCommand({
+    return buildRawTxCommand({
       cliPath: this.cliPath,
       networkParam: this.networkParam,
       transaction: options,
@@ -200,7 +203,7 @@ export class CardanoCli {
     account: string,
     options: AddressBuildOptions
   ): Promise<string> {
-    return await buildAddressCommand(
+    return buildAddressCommand(
       options,
       account,
       this.cliPath,
@@ -209,18 +212,18 @@ export class CardanoCli {
   }
 
   async addressKeyHash(account: string): Promise<string> {
-    return await buildAddressKeyHashCommand({
+    return buildAddressKeyHashCommand({
       cliPath: this.cliPath,
       account,
     });
   }
 
   async addressInfo(address: string): Promise<AddressInfo> {
-    return await addressInfoCommand({ cliPath: this.cliPath, address });
+    return addressInfoCommand({ cliPath: this.cliPath, address });
   }
 
   async addressBuildScript(script: JSONValue): Promise<string> {
-    return await addressBuildScriptCommand({
+    return addressBuildScriptCommand({
       cliPath: this.cliPath,
       networkParam: this.networkParam,
       script,
@@ -230,7 +233,7 @@ export class CardanoCli {
   async transactionBuild(options: Transaction): Promise<JSONValue> {
     const tip = await this.queryTip();
     const protocolParams = await this.queryProtocolParameters();
-    return await transactionBuildCommand({
+    return transactionBuildCommand({
       cliPath: this.cliPath,
       networkParam: this.networkParam,
       era: this.era,
@@ -243,7 +246,7 @@ export class CardanoCli {
   async transactionCalculateMinFee(
     options: CalculateMinFeeOptions
   ): Promise<string> {
-    return await calculateFeesCommand(
+    return calculateFeesCommand(
       options,
       this.cliPath,
       this.networkParam,
@@ -251,11 +254,11 @@ export class CardanoCli {
     );
   }
   async transactionPolicyid(script: JSONValue): Promise<string> {
-    return await transactionPolicyidCommand({ cliPath: this.cliPath, script });
+    return transactionPolicyidCommand({ cliPath: this.cliPath, script });
   }
 
   async transactionHashScriptData(script: JSONValue): Promise<string> {
-    return await transactionHashScriptDataCommand({
+    return transactionHashScriptDataCommand({
       cliPath: this.cliPath,
       script,
     });
@@ -270,21 +273,17 @@ export class CardanoCli {
   async transactionWitness(
     options: TransactionWitnessOptions
   ): Promise<string> {
-    return await transactionWitnessCommand(
-      options,
-      this.cliPath,
-      this.networkParam
-    );
+    return transactionWitnessCommand(options, this.cliPath, this.networkParam);
   }
   async transactionAssemble(
     options: TransactionAssembleOptions
   ): Promise<string> {
-    return await transactionAssembleCommand({ options, cliPath: this.cliPath });
+    return transactionAssembleCommand({ options, cliPath: this.cliPath });
   }
 
   async transactionCalculateMinValue(options: TxOut): Promise<string> {
     const protocolParameters = await this.queryProtocolParameters();
-    return await transactionCalculateMinValueCommand({
+    return transactionCalculateMinValueCommand({
       txOut: options,
       cliPath: this.cliPath,
       networkParam: this.protocolParametersPath,
@@ -306,24 +305,24 @@ export class CardanoCli {
   }
   async transactionSubmit(tx: string): Promise<string> {
     if (this.api) {
-      return await this.api.txSubmit(tx);
+      return this.api.txSubmit(tx);
     }
-    return await transactionSubmitCommand({
+    return transactionSubmitCommand({
       cliPath: this.cliPath,
       tx,
       networkParam: this.networkParam,
     });
   }
   async transactionTxid(options: TransactionViewOptions): Promise<string> {
-    return await transactionIdCommand({ cliPath: this.cliPath, options });
+    return transactionIdCommand({ cliPath: this.cliPath, options });
   }
 
   async transactionView(options: TransactionViewOptions): Promise<string> {
-    return await transactionViewCommand({ options, cliPath: this.cliPath });
+    return transactionViewCommand({ options, cliPath: this.cliPath });
   }
 
   async queryStakeAddressInfo(address: string): Promise<StakeAddressInfo[]> {
-    return await queryStakeCommand({
+    return queryStakeCommand({
       cliPath: this.cliPath,
       address,
       network: this.network,
@@ -333,7 +332,7 @@ export class CardanoCli {
     return stakeAddressKeyGenCommand({ account, cliPath: this.cliPath });
   }
   async stakeAddressBuild(account: string): Promise<string> {
-    return await stakeAddressBuildCommand({
+    return stakeAddressBuildCommand({
       account,
       cliPath: this.cliPath,
       network: this.network,
@@ -356,17 +355,17 @@ export class CardanoCli {
   }
 
   async pool(poolName: string): Promise<Pool> {
-    return await poolCommand({ cliPath: this.cliPath, poolName });
+    return poolCommand({ cliPath: this.cliPath, poolName });
   }
 
   async stakePoolId(poolName: string): Promise<string> {
-    return await stakePoolIdCommand({ cliPath: this.cliPath, poolName });
+    return stakePoolIdCommand({ cliPath: this.cliPath, poolName });
   }
 
   async stakeAddressRegistrationCertificate(
     account: string
   ): Promise<JSONValue> {
-    return await stakeAddressRegistrationCommand({
+    return stakeAddressRegistrationCommand({
       cliPath: this.cliPath,
       account,
     });
@@ -375,7 +374,7 @@ export class CardanoCli {
   async stakeAddressDeregistrationCertificate(
     account: string
   ): Promise<JSONValue> {
-    return await stakeAddressDeregistrationCommand({
+    return stakeAddressDeregistrationCommand({
       cliPath: this.cliPath,
       account,
     });
@@ -385,7 +384,7 @@ export class CardanoCli {
     account: string,
     poolId: string
   ): Promise<JSONValue> {
-    return await stakeAddressDelegationCommand({
+    return stakeAddressDelegationCommand({
       cliPath: this.cliPath,
       account,
       poolId,
@@ -393,15 +392,15 @@ export class CardanoCli {
   }
 
   async stakeAddressKeyHash(account: string): Promise<string> {
-    return await stakeAddressKeyHashCommand({ cliPath: this.cliPath, account });
+    return stakeAddressKeyHashCommand({ cliPath: this.cliPath, account });
   }
 
   async nodeKeyGenKES(poolName: string): Promise<Account> {
-    return await nodeKeyGenKesCommand({ cliPath: this.cliPath, poolName });
+    return nodeKeyGenKesCommand({ cliPath: this.cliPath, poolName });
   }
 
   async nodeKeyGen(poolName: string): Promise<Account> {
-    return await nodeKeyGenCommand({ cliPath: this.cliPath, poolName });
+    return nodeKeyGenCommand({ cliPath: this.cliPath, poolName });
   }
   async nodeIssueOpCert(
     poolName: string,
@@ -415,10 +414,10 @@ export class CardanoCli {
     });
   }
   async nodeKeyGenVRF(poolName: string): Promise<Account> {
-    return await nodeKeyGenVrfCommand({ cliPath: this.cliPath, poolName });
+    return nodeKeyGenVrfCommand({ cliPath: this.cliPath, poolName });
   }
   async nodeNewCounter(poolName: string, counter: string): Promise<string> {
-    return await nodeNewCounterCommand({
+    return nodeNewCounterCommand({
       cliPath: this.cliPath,
       poolName,
       counter,
@@ -445,7 +444,7 @@ export class CardanoCli {
     poolName: string,
     epoch: number
   ): Promise<JSONValue> {
-    return await stakePoolDeregistrationCommand({
+    return stakePoolDeregistrationCommand({
       cliPath: this.cliPath,
       poolName,
       epoch,

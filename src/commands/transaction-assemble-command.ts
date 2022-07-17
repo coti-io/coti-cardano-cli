@@ -1,4 +1,4 @@
-import { deleteFile, exec, readFile, witnessFilesToString } from "../helpers";
+import { deleteFile, exec, readFile, witnessFilesToString } from '../helpers';
 import { TransactionAssembleOptions } from '../interfaces';
 import { uuid } from 'uuidv4';
 

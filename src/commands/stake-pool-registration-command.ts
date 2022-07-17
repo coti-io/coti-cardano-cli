@@ -1,5 +1,4 @@
 import {
-  buildRandomFilePath,
   deleteFile,
   exec,
   ownerToString,
@@ -7,7 +6,7 @@ import {
   relayToString,
 } from '../helpers';
 import { StakePoolRegistrationOptions } from '../interfaces';
-import { JSONValue } from "../types";
+import { JSONValue } from '../types';
 
 export interface StakePoolRegistrationParams {
   cliPath: string;

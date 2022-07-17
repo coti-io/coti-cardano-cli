@@ -1,7 +1,5 @@
 import { exec } from '../helpers';
 import { Tip } from '../interfaces';
-import { NullableApi } from '../cardano-cli';
-import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 
 export interface QueryTimParamsParams {
   cliPath: string;
@@ -16,8 +14,7 @@ const buildCommand = (cliPath: string, networkParam: string): string => {
 };
 
 export async function queryTipCommand(
-  options: QueryTimParamsParams,
-  api?: NullableApi
+  options: QueryTimParamsParams
 ): Promise<Tip> {
   const command = buildCommand(options.cliPath, options.networkParam);
   const stdout = await exec(command);

@@ -1,4 +1,4 @@
-import { buildRandomFilePath, exec } from '../helpers';
+import { exec } from '../helpers';
 import { uuid } from 'uuidv4';
 import { promises as fs } from 'fs';
 import { transactionIdCommand } from './transaction-id-command';

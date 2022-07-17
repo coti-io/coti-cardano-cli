@@ -1,14 +1,12 @@
 import {
-  buildRandomFilePath,
   deleteFile,
   exec,
-  readFile, readJsonFile,
-  signingKeysToString
-} from "../helpers";
-import { SignedTransaction, TransactionSignOptions } from "../interfaces";
+  readJsonFile,
+  signingKeysToString,
+} from '../helpers';
+import { SignedTransaction, TransactionSignOptions } from '../interfaces';
 import { uuid } from 'uuidv4';
-import { promises, promises as fs, writeFile } from 'fs';
-import { JSONValue } from '../types';
+import { promises as fs } from 'fs';
 
 const buildCommand = (
   cliPath: string,
@@ -47,7 +45,9 @@ export async function transactionSignCommand(
   );
 
   // @ts-ignore
-  const fileContent: SignedTransaction = (await readJsonFile(filePath)) as SignedTransaction;
+  const fileContent: SignedTransaction = (await readJsonFile(
+    filePath
+  )) as SignedTransaction;
   const promisesArr = [];
   for (const signFilePath of signingKeysPaths) {
     promisesArr.push(deleteFile(signFilePath));

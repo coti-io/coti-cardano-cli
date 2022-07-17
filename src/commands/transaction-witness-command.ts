@@ -1,4 +1,4 @@
-import { buildRandomFilePath, deleteFile, exec, readFile } from '../helpers';
+import { deleteFile, exec, readFile } from '../helpers';
 import { TransactionWitnessOptions } from '../interfaces';
 import { uuid } from 'uuidv4';
 

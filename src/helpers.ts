@@ -2,14 +2,7 @@ import { constants, existsSync, promises as fs } from 'fs';
 import { exec as cpExec } from 'child_process';
 import util from 'util';
 import { uuid } from 'uuidv4';
-import {
-  Mint,
-  ProtocolParams,
-  TxIn,
-  TxOut,
-  Utxo,
-  Withdrawal,
-} from './interfaces';
+import { Mint, TxIn, TxOut, Utxo, Withdrawal } from './interfaces';
 import { JSONValue } from './types';
 import Big from 'big.js';
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';

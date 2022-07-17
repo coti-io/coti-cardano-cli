@@ -44,7 +44,7 @@ const buildCommand = (
     slot: number;
   }
 ): string => {
-  const { transaction, cliPath, networkParam, era } = options;
+  const { transaction, cliPath, era } = options;
   return `${cliPath} transaction build-raw \
                 --babbage-era \
                 ${commandInput.txInString} \
@@ -62,7 +62,9 @@ const buildCommand = (
                     : commandInput.slot + 10000
                 } \
                 --invalid-before ${
-                  commandInput.invalidBefore ? commandInput.invalidBefore : commandInput.slot
+                  commandInput.invalidBefore
+                    ? commandInput.invalidBefore
+                    : commandInput.slot
                 } \
                 --fee ${transaction.fee ? transaction.fee : 0} \
                 --out-file ${commandInput.rawFilePath} \

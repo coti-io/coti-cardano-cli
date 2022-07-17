@@ -1,6 +1,5 @@
 import { deleteFile, exec, multiAssetToString } from '../helpers';
-import { ProtocolParams, TxOut } from "../interfaces";
-import { JSONValue } from '../types';
+import { ProtocolParams, TxOut } from '../interfaces';
 import { promises as fs } from 'fs';
 import { uuid } from 'uuidv4';
 
