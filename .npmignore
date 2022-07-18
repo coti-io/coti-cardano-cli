@@ -1,4 +1,11 @@
-src
 tsconfig.json
-tslint.json
+settings.json
+src
+assets
+.idea
+.vscode
+.github
+*.iml
+.eslintrc
+.eslintignore
 .prettierrc
