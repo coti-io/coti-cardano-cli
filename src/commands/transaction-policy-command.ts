@@ -1,24 +1,29 @@
-import { exec } from '../helpers';
+import { deleteFile, exec, readFile } from '../helpers';
 import { JSONValue } from '../types';
 import { uuid } from 'uuidv4';
 import { promises as fs } from 'fs';
 
 export interface TransactionPolicyParams {
   cliPath: string;
-  script: JSONValue;
+  script: string | JSONValue;
 }
 
-const buildCommand = (cliPath: string, UID: string): string => {
-  return `${cliPath} transaction policyid --script-file tmp/script_${UID}.json`;
+const buildCommand = (cliPath: string, filePath: string): string => {
+  return `${cliPath} transaction policyid --script-file ${filePath}`;
 };
 
 export async function transactionPolicyidCommand(
   options: TransactionPolicyParams
 ): Promise<string> {
   const UID = uuid();
-  await fs.writeFile(`tmp/script_${UID}.json`, JSON.stringify(options.script));
-  const command = buildCommand(options.cliPath, UID);
-  const stdout = await exec(command);
+  const filePath = `tmp/script_${UID}.json`;
 
-  return stdout.toString().trim();
+  await fs.writeFile(filePath, JSON.stringify(options.script));
+  const command = buildCommand(options.cliPath, filePath);
+  await exec(command);
+
+  const fileContent = readFile(filePath);
+  await deleteFile(filePath);
+
+  return fileContent;
 }

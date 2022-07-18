@@ -21,7 +21,6 @@ import {
   TransactionWitnessOptions,
   TxOut,
   Utxo,
-  Wallet,
 } from './interfaces';
 import mainnetShelleyGenesis from './genesis-files/mainnet-shelley-genesis.json';
 import testnetShelleyGenesis from './genesis-files/testnet-shelley-genesis.json';
@@ -53,7 +52,6 @@ import { transactionViewCommand } from './commands/transaction-view-command';
 import { queryStakeCommand } from './commands/query-stakes-command';
 import { stakeAddressKeyGenCommand } from './commands/stake-address-key-gen-command';
 import { stakeAddressBuildCommand } from './commands/stake-address-build-command';
-import { walletCommand } from './commands/wallet-command';
 import { stakePoolIdCommand } from './commands/stake-pool-id-command';
 import { poolCommand } from './commands/pool-command';
 import { stakeAddressRegistrationCommand } from './commands/stake-address-registration-command';
@@ -73,9 +71,9 @@ import { queryAddressUtxo } from './helpers';
 export type NullableApi = BlockFrostAPI | null;
 
 export class CardanoCli {
-  network: Network = 'mainnet';
   era = '';
-  cliPath = 'cardano-cli';
+  network: Network = 'mainnet';
+  cliPath = '../executables/ubuntu/cardano-cli';
   networkParam = '';
   shelleyGenesis: { slotsPerKESPeriod?: number } = {};
   testnetMagic = '1097911063';
@@ -143,7 +141,8 @@ export class CardanoCli {
 
       const protocolParams = await this.api.epochsParameters(latestEpoch.epoch);
       return {
-        txFeePerByte: 1,
+        txFeePerByte: protocolParams.min_fee_a,
+        txFeeFixed: protocolParams.min_fee_b,
         minUTxOValue: Number(protocolParams.min_utxo),
         stakePoolDeposit: Number(protocolParams.pool_deposit),
         decentralization: protocolParams.decentralisation_param,
@@ -159,7 +158,6 @@ export class CardanoCli {
           minor: protocolParams.protocol_minor_ver,
           major: protocolParams.protocol_major_ver,
         },
-        txFeeFixed: 1,
         stakeAddressDeposit: 1,
         monetaryExpansion: 1,
         poolPledgeInfluence: 1,
@@ -246,11 +244,12 @@ export class CardanoCli {
   async transactionCalculateMinFee(
     options: CalculateMinFeeOptions
   ): Promise<string> {
+    const protocolParams = await this.queryProtocolParameters();
     return calculateFeesCommand(
       options,
       this.cliPath,
       this.networkParam,
-      this.protocolParametersPath
+      protocolParams
     );
   }
   async transactionPolicyid(script: JSONValue): Promise<string> {
@@ -345,15 +344,6 @@ export class CardanoCli {
     return tip.slot / (this.shelleyGenesis.slotsPerKESPeriod as number);
   }
 
-  async wallet(account: string): Promise<Wallet> {
-    return walletCommand({
-      cliPath: this.cliPath,
-      account,
-      networkParam: this.networkParam,
-      network: this.network,
-    });
-  }
-
   async pool(poolName: string): Promise<Pool> {
     return poolCommand({ cliPath: this.cliPath, poolName });
   }
@@ -399,11 +389,12 @@ export class CardanoCli {
     return nodeKeyGenKesCommand({ cliPath: this.cliPath, poolName });
   }
 
-  async nodeKeyGen(poolName: string): Promise<Account> {
-    return nodeKeyGenCommand({ cliPath: this.cliPath, poolName });
+  async nodeKeyGen(poolName: string, counter: string): Promise<Account> {
+    return nodeKeyGenCommand({ cliPath: this.cliPath, poolName, counter });
   }
   async nodeIssueOpCert(
     poolName: string,
+    counter: string,
     kesPeriod: number
   ): Promise<JSONValue> {
     const kesPeriodFinal = kesPeriod ? kesPeriod : await this.KESPeriod();
@@ -411,6 +402,7 @@ export class CardanoCli {
       cliPath: this.cliPath,
       poolName,
       kesPeriod: kesPeriodFinal,
+      counter,
     });
   }
   async nodeKeyGenVRF(poolName: string): Promise<Account> {
@@ -430,6 +422,7 @@ export class CardanoCli {
 
   async stakePoolRegistrationCertificate(
     poolName: string,
+    account: string,
     options: StakePoolRegistrationOptions
   ): Promise<JSONValue> {
     return stakePoolRegistrationCommand({
@@ -437,6 +430,7 @@ export class CardanoCli {
       poolName,
       options,
       network: this.network,
+      account,
     });
   }
 

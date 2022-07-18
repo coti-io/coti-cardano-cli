@@ -1,11 +1,11 @@
-import { CardanoCli, ProtocolParams, Tip, Utxo } from '../src';
+import { CardanoCli, ProtocolParams, Tip, Transaction, Utxo } from '../src';
 import { AddressKeyGenRes } from '../src/commands/address-key-gen-command';
 
 describe('Cardano cli test with blockfrost', () => {
   let cardanoCliInstance: CardanoCli;
   beforeAll(() => {
     cardanoCliInstance = new CardanoCli({
-      blockfrostApiKey: '<API_KEY>',
+      blockfrostApiKey: 'testneth3doUix8STTY7wQ4CIy6uf5unIzp1Sv3',
     });
   });
 
@@ -27,8 +27,37 @@ describe('Cardano cli test with blockfrost', () => {
     expect(utxos).toBeDefined();
   });
 
-  it('Get address key-gen command', async () => {
-    const keyGen: AddressKeyGenRes = await cardanoCliInstance.addressKeyGen();
-    expect(keyGen).toBeDefined();
+  it('Build rawTx', async () => {
+    const buildRawTransactionRequest: Transaction = {
+      txIn: [
+        {
+          txHash:
+            'd42e86749031c724b380b70ba2e0f16fbf8c7c9618fb6f712dc9f1ffa84a4b79',
+          txId: '1',
+        },
+      ],
+      txOut: [
+        {
+          address:
+            'addr_test1qr3pzzn4yhsgtxfj55y0wwlumnxllsumv8a98wst6sh4z6p4g663hkrkp8plfjl3epmegfedayyghgtpkmn2c9df3ddsa47p0d',
+          value: { lovelace: '100000000' },
+          datumHash: '',
+        },
+
+        {
+          address:
+            'addr_test1qr3pzzn4yhsgtxfj55y0wwlumnxllsumv8a98wst6sh4z6p4g663hkrkp8plfjl3epmegfedayyghgtpkmn2c9df3ddsa47p0d',
+          value: { lovelace: '798000000' },
+          datumHash: '',
+        },
+      ],
+      fee: 1000000,
+      invalidAfter: 1000,
+    };
+
+    const rawTx = await cardanoCliInstance.transactionBuildRaw(
+      buildRawTransactionRequest
+    );
+    expect(rawTx).toBeDefined();
   });
 });

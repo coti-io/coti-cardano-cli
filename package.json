@@ -18,7 +18,12 @@
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "version-prerelease": "npm version $(semver $npm_package_version -i prerelease --preid beta)",
+    "version-prepatch": "npm version $(semver $npm_package_version -i prepatch --preid beta)",
+    "version-preminor": "npm version $(semver $npm_package_version -i preminor --preid beta)",
+    "version-premajor": "npm version $(semver $npm_package_version -i premajor --preid beta)",
+    "version-release": "npm version $(semver $npm_package_version -i)"
   },
   "repository": {
     "type": "git",

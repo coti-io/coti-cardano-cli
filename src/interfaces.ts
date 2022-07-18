@@ -54,9 +54,9 @@ export interface StakePoolRegistrationOptions {
 }
 
 export interface CalculateMinFeeOptions {
-  txBody: string;
-  txIn: TxIn[];
-  txOut: TxOut[];
+  txBody: CborTransaction;
+  txIn: number;
+  txOut: number;
   witnessCount: number;
 }
 

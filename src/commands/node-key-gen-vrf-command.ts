@@ -1,5 +1,13 @@
-import { buildRandomFilePath, checkFileExists, exec } from '../helpers';
+import {
+  buildRandomFilePath,
+  checkFileExists,
+  deleteFile,
+  exec,
+} from '../helpers';
 import { Account } from '../interfaces';
+import { addressKeyGenCommand } from './address-key-gen-command';
+import { nodeNewCounterCommand } from './node-new-counter-command';
+import { promises as fs } from 'fs';
 
 export interface NodeKeyGenVrfParams {
   cliPath: string;
@@ -17,13 +25,23 @@ export async function nodeKeyGenVrfCommand(
   options: NodeKeyGenVrfParams
 ): Promise<Account> {
   const { poolName, cliPath } = options;
-  const vkey = `tmp/${poolName}.vrf.vkey`;
-  const skey = `tmp/${poolName}.vrf.skey`;
-  if (await checkFileExists(vkey))
-    return Promise.reject(`${vkey} file already exists`);
-  if (await checkFileExists(skey))
-    return Promise.reject(`${skey} file already exists`);
-  await exec(buildCommand(cliPath, vkey, skey));
+  const nodeVkeyPath = `tmp/${poolName}.kes.vkey`;
+  const nodeSkeyPath = `tmp/${poolName}.node.skey`;
+  if (await checkFileExists(nodeVkeyPath))
+    return Promise.reject(`${nodeVkeyPath} file already exists`);
+  if (await checkFileExists(nodeSkeyPath))
+    return Promise.reject(`${nodeSkeyPath} file already exists`);
+
+  const { skey, vkey } = await addressKeyGenCommand({ cliPath });
+
+  await fs.writeFile(nodeVkeyPath, vkey);
+  await fs.writeFile(nodeSkeyPath, skey);
+
+  await exec(buildCommand(cliPath, JSON.stringify(vkey), JSON.stringify(skey)));
+
+  await deleteFile(nodeVkeyPath);
+  await deleteFile(nodeSkeyPath);
+
   return {
     vkey,
     skey,

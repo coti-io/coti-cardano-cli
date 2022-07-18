@@ -42,7 +42,7 @@ export async function buildAddressCommand(
     ? `--stake-script-file ${await jsonToPath(options.stakeScript)}`
     : '';
 
-  const filePath = `tmp/priv/wallet/${account}/${account}.payment.addr`;
+  const filePath = `tmp/${account}.payment.addr`;
 
   const commandInput = {
     cliPath: cliPath,

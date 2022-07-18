@@ -1,4 +1,4 @@
-import { deleteFile, exec, multiAssetToString } from '../helpers';
+import { deleteFile, exec, multiAssetToString, readFile } from '../helpers';
 import { ProtocolParams, TxOut } from '../interfaces';
 import { promises as fs } from 'fs';
 import { uuid } from 'uuidv4';
@@ -33,11 +33,12 @@ export async function transactionCalculateMinValueCommand(
   );
   const multiAsset = multiAssetToString(input.txOut);
 
-  const stdout = await exec(
+  await exec(
     buildCommand(input.txOut, multiAsset, input.cliPath, protocolParametersPath)
   );
 
+  const fileContent = await readFile(protocolParametersPath);
   await deleteFile(protocolParametersPath);
 
-  return stdout.replace(/\s+/g, ' ').split(' ')[1];
+  return fileContent.replace(/\s+/g, ' ').split(' ')[1];
 }

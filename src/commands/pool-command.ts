@@ -10,9 +10,8 @@ export interface PoolParams {
 
 export async function poolCommand(options: PoolParams): Promise<Pool> {
   const { poolName, cliPath } = options;
-  await fs.readFile(`tmp/${poolName}.node.vkey`);
   const id = await stakePoolIdCommand({ cliPath, poolName });
-  const files = await fs.readdir(`tmp/`);
+  const files = await fs.readdir('tmp/');
   const keysPath = {};
   files.forEach(file => {
     const name = file.split('.')[1] + '.' + file.split('.')[2];

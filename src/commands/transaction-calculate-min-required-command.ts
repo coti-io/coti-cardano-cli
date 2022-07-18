@@ -1,4 +1,4 @@
-import { deleteFile, exec, multiAssetToString } from '../helpers';
+import { deleteFile, exec, multiAssetToString, readFile } from '../helpers';
 import { ProtocolParams, TxOut } from '../interfaces';
 import { uuid } from 'uuidv4';
 import { promises as fs } from 'fs';
@@ -35,7 +35,7 @@ export async function transactionCalculateMinRequiredUtxoCommand(
   );
   const multiAsset = multiAssetToString(options.value);
 
-  const stdout = await exec(
+  await exec(
     buildCommand(
       options.cliPath,
       options.address,
@@ -44,7 +44,8 @@ export async function transactionCalculateMinRequiredUtxoCommand(
     )
   );
 
+  const fileContent = await readFile(protocolParametersPath);
   await deleteFile(protocolParametersPath);
 
-  return stdout.replace(/\s+/g, ' ').split(' ')[1];
+  return fileContent.replace(/\s+/g, ' ').split(' ')[1];
 }

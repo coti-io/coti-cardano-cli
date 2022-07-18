@@ -1,13 +1,14 @@
-import { exec } from '../helpers';
+import { deleteFile, exec, readFile } from '../helpers';
 import { promises as fs } from 'fs';
+import * as path from 'path';
 
 export interface StakePoolMetadataParams {
   cliPath: string;
   metadata: string;
 }
 
-const buildCommand = (cliPath: string): string => {
-  return `${cliPath} stake-pool metadata-hash --pool-metadata-file tmp/poolmeta.json`;
+const buildCommand = (cliPath: string, filePath: string): string => {
+  return `${cliPath} stake-pool metadata-hash --pool-metadata-file ${filePath}`;
 };
 
 export async function stakePoolMetadaCommand(
@@ -15,10 +16,12 @@ export async function stakePoolMetadaCommand(
 ): Promise<string> {
   const { cliPath, metadata } = options;
 
-  await fs.writeFile('tmp/poolmeta.json', metadata);
-  const stdout = await exec(buildCommand(cliPath));
-  const metaHash = stdout.toString().replace(/\s+/g, ' ');
-  await exec('rm tmp/poolmeta.json');
+  const filePath = 'tmp/poolmeta.json';
+  await fs.writeFile(filePath, metadata);
+  await exec(buildCommand(cliPath, filePath));
 
-  return metaHash;
+  const fileContent = await readFile(filePath);
+  await deleteFile(filePath);
+
+  return fileContent.replace(/\s+/g, ' ');
 }
