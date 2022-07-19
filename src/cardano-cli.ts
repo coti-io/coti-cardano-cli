@@ -73,7 +73,7 @@ export type NullableApi = BlockFrostAPI | null;
 export class CardanoCli {
   era = '';
   network: Network = 'mainnet';
-  cliPath = '../executables/ubuntu/cardano-cli';
+  cliPath = 'cardano-cli';
   networkParam = '';
   shelleyGenesis: { slotsPerKESPeriod?: number } = {};
   testnetMagic = '1097911063';

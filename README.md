@@ -1,19 +1,18 @@
 # Coti cardano-cli 
 
 > A package to run cardano-cli commands from nodejs, if you hold a blockfrost API-KEY you could add 
-> while  creating a cardano-cli instance and get the data directly from there.
-
-
-
----
-
-# my-package-name
+> while  creating a cardano-cli instance and get the data directly from there without running a cardano
+> node.
 
 [![npm package][npm-img]][npm-url]
 [![Downloads][downloads-img]][downloads-url]
 [![Issues][issues-img]][issues-url]
 
-> My awesome module
+# Install binaries
+1) Download the binaries from the cardano website (version 1.35.0)
+ https://hydra.iohk.io/build/16934881  
+2) Copy the cardano-cli to the bin dir, if it not exists create a bin dir in ${HOME}/bin
+3) run the following command on the cardano-cli file ``` chmod +x cardano-cli ```
 
 ## Install
 
@@ -44,23 +43,23 @@ cardanoCli.queryProtocolParameters()
 const buildRawTransactionRequest = {
   "txsIn": [
     {
-      "txHash": "d42e86749031c724b380b70ba2e0f16fbf8c7c9618fb6f712dc9f1ffa84a4b79",
-      "utxoIndex": 1
+      "txHash": "<txHash>",
+      "utxoIndex": 1 // txIndex
     }
   ],
   "txsOut": [
     {
-      "address": "addr_test1qr3pzzn4yhsgtxfj55y0wwlumnxllsumv8a98wst6sh4z6p4g663hkrkp8plfjl3epmegfedayyghgtpkmn2c9df3ddsa47p0d",
-      "amount": 100000000
+      "address": "<address>",
+      "amount": 100000000 // amount
     },
 
     {
-      "address": "addr_test1qr3pzzn4yhsgtxfj55y0wwlumnxllsumv8a98wst6sh4z6p4g663hkrkp8plfjl3epmegfedayyghgtpkmn2c9df3ddsa47p0d",
-      "amount": 798000000
+      "address": "<address>",
+      "amount": 798000000 // amount
     }
   ],
-  "hereAfter": 63700063,
-  "fee": 1000000
+  "hereAfter": 63700063, // current slot number + x
+  "fee": 1000000 // minmum transaction fee
 }
 
 cardanoCli.transactionBuildRaw(buildRawTransactionRequest).then(rawTx => {
@@ -108,7 +107,7 @@ cardanoCli.submitTransaction(submitTransactionRequest).then(signTx => {
 
 
 [downloads-img]:https://img.shields.io/npm/dt/coti-cardano-cli
-[downloads-url]:https://fillThisoneFromNpm.com
+[downloads-url]:https://npmtrends.com/coti-cardano-cli
 [npm-img]:https://img.shields.io/npm/v/coti-cardano-cli
 [npm-url]:https://www.npmjs.com/package/coti-cardano-cli
 [issues-img]:https://img.shields.io/github/issues/coti-io/coti-cardano-cli
