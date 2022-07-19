@@ -11,7 +11,7 @@
 # Install binaries
 1) Download the binaries from the cardano website (version 1.35.0)
  https://hydra.iohk.io/build/16934881  
-2) Copy the cardano-cli to the bin dir, if it not exists create a bin dir in ${HOME}/bin
+2) Copy the cardano-cli to the bin dir, if it not exists create a bin dir in /bin
 3) run the following command on the cardano-cli file ``` chmod +x cardano-cli ```
 
 ## Install
@@ -72,13 +72,13 @@ const signTransactionRequest = {
   "rawTransaction": {
     "type": "TxBodyBabbage",
     "description": "",
-    "cborHex": "86a50081825820d42e86749031c724b380b70ba2e0f16fbf8c7c9618fb6f712dc9f1ffa84a4b79010182a200583900e2110a7525e0859932a508f73bfcdccdffc39b61fa53ba0bd42f51683546b51bd87609c3f4cbf1c87794272de9088ba161b6e6ac15a98b5b011a05f5e100a200583900e2110a7525e0859932a508f73bfcdccdffc39b61fa53ba0bd42f51683546b51bd87609c3f4cbf1c87794272de9088ba161b6e6ac15a98b5b011a2f908380021a000f4240031a03cbfc5f081a03cbf8bf9fff8080f5f6"
+    "cborHex": "<cborHex>"
   },
   "paymentKeys": [
     {
       "type": "PaymentExtendedSigningKeyShelley_ed25519_bip32",
       "description": "",
-      "cborHex": "5880307ff29b79629af045af5d71030e80b3765cee4fc144cd5e600b5b76a6f052579581f605479dfb8dd80566f139899b4487092ee03c0ab0c4902b9f7a832a8b55aee7603774f340ac6c59ab628a5e98b169641aa1a4b4c74ad43347d383fb77324a295865b519b718a91a4b7f561edd45d2092cb62320556416ec63b92f110b90"
+      "cborHex": "<cborHex>"
     }
   ]
 }
@@ -93,7 +93,7 @@ const submitTransactionRequest = {
   "signedTransaction": {
     "type": "Tx BabbageEra",
     "description": "",
-    "cborHex": "84a50081825820d42e86749031c724b380b70ba2e0f16fbf8c7c9618fb6f712dc9f1ffa84a4b79010182a200583900e2110a7525e0859932a508f73bfcdccdffc39b61fa53ba0bd42f51683546b51bd87609c3f4cbf1c87794272de9088ba161b6e6ac15a98b5b011a05f5e100a200583900e2110a7525e0859932a508f73bfcdccdffc39b61fa53ba0bd42f51683546b51bd87609c3f4cbf1c87794272de9088ba161b6e6ac15a98b5b011a2f908380021a000f4240031a03cbfc5f081a03cbf8bfa10081825820aee7603774f340ac6c59ab628a5e98b169641aa1a4b4c74ad43347d383fb7732584060f569bdc3b5a4b89125066be820386b77c17c2a89983aa0a17454232177f5b78c4c7678e08e7a67193c92c6c43936b1f6415688311d9528b804743674981f0cf5f6"
+    "cborHex": "<cborHex>"
   }
 }
 
