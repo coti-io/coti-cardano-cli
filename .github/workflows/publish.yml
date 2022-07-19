@@ -41,7 +41,7 @@ jobs:
         run: |
           git config --local user.email "eli@coti.io"
           git config --local user.name "coti-tech"
-          npm i
+          npm ci
           npm run build
           npm run version-${{ inputs.version }}
 
