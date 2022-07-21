@@ -67,6 +67,7 @@ import { stakePoolMetadaCommand } from './commands/stake-pool-metadata-command';
 import { stakePoolRegistrationCommand } from './commands/stake-pool-registration-command';
 import { stakePoolDeregistrationCommand } from './commands/stake-pool-deregistration-command';
 import { queryAddressUtxo } from './helpers';
+import { ConvertAddressKeyCommand } from './commands/convert-address-key-command';
 
 export type NullableApi = BlockFrostAPI | null;
 
@@ -442,6 +443,13 @@ export class CardanoCli {
       cliPath: this.cliPath,
       poolName,
       epoch,
+    });
+  }
+
+  async replaceAddressKeyToPaymentKey(signingKey: string): Promise<JSONValue> {
+    return ConvertAddressKeyCommand({
+      signingKey,
+      cliPath: this.cliPath,
     });
   }
 }
