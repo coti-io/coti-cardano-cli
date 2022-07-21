@@ -13,7 +13,7 @@ const buildCommand = (
   filePath: string
 ): string => {
   return `${cliPath} node key-gen \
-                        ----shelley-payment-key \
+                        --shelley-payment-key \
                         --signing-key-file ${signingKeyFilePath} \
                         --out-file ${filePath}
                     `;
