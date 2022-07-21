@@ -7,6 +7,7 @@ import {
 import { SignedTransaction, TransactionSignOptions } from '../interfaces';
 import { uuid } from 'uuidv4';
 import { promises as fs } from 'fs';
+import { transactionIdCommand } from './transaction-id-command';
 
 const buildCommand = (
   cliPath: string,
@@ -44,10 +45,15 @@ export async function transactionSignCommand(
     buildCommand(cliPath, signingKeys, filePath, networkParam, txBodyFilePath)
   );
 
+  const txHash = await transactionIdCommand({
+    cliPath,
+    options: { txBody: txBodyFilePath },
+  });
+
   // @ts-ignore
-  const fileContent: SignedTransaction = (await readJsonFile(
+  const fileContent: CborTransaction = (await readJsonFile(
     filePath
-  )) as SignedTransaction;
+  ));
   const promisesArr = [];
   for (const signFilePath of signingKeysPaths) {
     promisesArr.push(deleteFile(signFilePath));
@@ -57,5 +63,5 @@ export async function transactionSignCommand(
     console.error(err);
   });
 
-  return fileContent;
+  return { signedCborTransaction: fileContent, txHash: txHash };
 }
