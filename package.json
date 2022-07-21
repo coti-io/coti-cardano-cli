@@ -1,6 +1,6 @@
 {
   "name": "@coti-io/coti-cardano-cli",
-  "version": "1.0.1-beta.2",
+  "version": "1.0.1-beta.3",
   "description": "A package to operate cardano-cli from nodejs",
   "main": "./lib/src/index.js",
   "files": [
