@@ -12,7 +12,7 @@ const buildCommand = (
   signingKeyFilePath: string,
   filePath: string
 ): string => {
-  return `${cliPath} node key-gen \
+  return `${cliPath} key convert-cardano-address-key \
                         --shelley-payment-key \
                         --signing-key-file ${signingKeyFilePath} \
                         --out-file ${filePath}
