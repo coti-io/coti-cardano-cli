@@ -2,7 +2,7 @@ import {
   buildRandomFilePath,
   checkFileExists,
   deleteFile,
-  exec,
+  exec, readFile,
 } from '../helpers';
 import { Account } from '../interfaces';
 import { addressKeyGenCommand } from './address-key-gen-command';
@@ -12,32 +12,36 @@ import { uuid } from 'uuidv4';
 
 export interface NodeKeyGenVrfParams {
   cliPath: string;
-  skey: string;
-  vkey: string;
 }
 
-const buildCommand = (cliPath: string, vkey: string, skey: string): string => {
+export interface NodeKeyGenVrfRes {
+  vkey: string;
+  skey: string;
+}
+
+const buildCommand = (cliPath: string, nodeVkeyPath: string, nodeSkeyPath: string): string => {
   return `${cliPath} node key-gen-VRF \
-                        --verification-key-file ${vkey} \
-                        --signing-key-file ${skey}
+                        --verification-key-file ${nodeVkeyPath} \
+                        --signing-key-file ${nodeSkeyPath}
                     `;
 };
 
 export async function nodeKeyGenVrfCommand(
   options: NodeKeyGenVrfParams
-): Promise<string> {
-  const { cliPath, skey, vkey } = options;
+): Promise<NodeKeyGenVrfRes> {
+  const { cliPath } = options;
   const UID = uuid();
   const nodeVkeyPath = `tmp/${UID}.kes.vkey`;
   const nodeSkeyPath = `tmp/${UID}.node.skey`;
 
-  await fs.writeFile(nodeVkeyPath, vkey);
-  await fs.writeFile(nodeSkeyPath, skey);
 
-  const stdout = await exec(buildCommand(cliPath, nodeVkeyPath, nodeSkeyPath));
+  await exec(buildCommand(cliPath, nodeVkeyPath, nodeSkeyPath));
+
+  const vkey = await readFile(nodeVkeyPath);
+  const skey = await readFile(nodeSkeyPath);
 
   await deleteFile(nodeVkeyPath);
   await deleteFile(nodeSkeyPath);
 
-  return stdout.trim();
+  return {skey, vkey};
 }

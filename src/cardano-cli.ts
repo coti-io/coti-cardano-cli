@@ -58,7 +58,7 @@ import { stakeAddressKeyHashCommand } from './commands/stake-address-key-hash-co
 import {nodeKeyGenKesCommand, NodeKeyGenKesRes} from './commands/node-key-gen-kes-command';
 import { nodeKeyGenCommand } from './commands/node-key-gen-command';
 import { nodeIssueOpCertCommand } from './commands/node-issue-op-cert-command';
-import { nodeKeyGenVrfCommand } from './commands/node-key-gen-vrf-command';
+import {nodeKeyGenVrfCommand, NodeKeyGenVrfRes} from './commands/node-key-gen-vrf-command';
 import { nodeNewCounterCommand } from './commands/node-new-counter-command';
 import { stakePoolMetadaCommand } from './commands/stake-pool-metadata-command';
 import { stakePoolRegistrationCommand } from './commands/stake-pool-registration-command';
@@ -178,7 +178,7 @@ export class CardanoCli {
     });
   }
 
-  async addressKeyGen(skey: string, vkey: string): Promise<AddressKeyGenRes> {
+  async addressKeyGen(): Promise<AddressKeyGenRes> {
     return addressKeyGenCommand({ cliPath: this.cliPath });
   }
 
@@ -408,8 +408,8 @@ export class CardanoCli {
       nodeSkey,
     });
   }
-  async nodeKeyGenVRF(skey: string, vkey: string): Promise<string> {
-    return nodeKeyGenVrfCommand({ cliPath: this.cliPath, skey, vkey });
+  async nodeKeyGenVRF(): Promise<NodeKeyGenVrfRes> {
+    return nodeKeyGenVrfCommand({ cliPath: this.cliPath});
   }
   async nodeNewCounter(
     counter: string,
