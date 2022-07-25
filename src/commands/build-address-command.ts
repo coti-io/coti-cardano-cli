@@ -1,5 +1,6 @@
 import { deleteFile, exec, jsonToPath, readFile } from '../helpers';
 import { AddressBuildOptions } from '../interfaces';
+import { uuid } from 'uuidv4';
 
 export interface BuildAddressCommand {
   cliPath: string;
@@ -8,7 +9,6 @@ export interface BuildAddressCommand {
   stakeVkey: string;
   paymentScript: string;
   stakeScript: string;
-  account: string;
   filePath: string;
 }
 
@@ -25,10 +25,10 @@ const buildCommand = (options: BuildAddressCommand): string => {
 
 export async function buildAddressCommand(
   options: AddressBuildOptions,
-  account: string,
   cliPath: string,
   networkParam: string
 ): Promise<string> {
+  const UID = uuid();
   const paymentVkey = options.paymentVkey
     ? `--payment-verification-key-file ${options.paymentVkey}`
     : '';
@@ -42,7 +42,7 @@ export async function buildAddressCommand(
     ? `--stake-script-file ${await jsonToPath(options.stakeScript)}`
     : '';
 
-  const filePath = `tmp/${account}.payment.addr`;
+  const filePath = `tmp/${UID}.payment.addr`;
 
   const commandInput = {
     cliPath: cliPath,
@@ -51,7 +51,6 @@ export async function buildAddressCommand(
     stakeVkey: stakeVkey,
     paymentScript: paymentScript,
     stakeScript: stakeScript,
-    account,
     filePath,
   };
 

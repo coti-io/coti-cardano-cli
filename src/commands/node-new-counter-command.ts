@@ -1,16 +1,15 @@
 import { deleteFile, exec, readFile } from '../helpers';
 import { stakePoolIdCommand } from './stake-pool-id-command';
 import { promises as fs } from 'fs';
+import { uuid } from 'uuidv4';
 
 export interface NodeNewCounterParams {
   cliPath: string;
-  poolName: string;
   counter: string;
 }
 
 const buildCommand = (
   cliPath: string,
-  poolName: string,
   counter: string,
   filePath: string,
   nodeVerificationPath: string
@@ -25,16 +24,15 @@ const buildCommand = (
 export async function nodeNewCounterCommand(
   options: NodeNewCounterParams
 ): Promise<string> {
-  const { cliPath, poolName, counter } = options;
+  const { cliPath, counter } = options;
+  const UID = uuid();
 
-  const filePath = `tmp/${poolName}.node.counter`;
-  const nodeVerificationPath = `tmp/${poolName}.node.vkey`;
-  const nodeVkey = await stakePoolIdCommand({ cliPath, poolName });
+  const filePath = `tmp/${UID}.node.counter`;
+  const nodeVerificationPath = `tmp/${UID}.node.vkey`;
+  const nodeVkey = await stakePoolIdCommand({ cliPath });
 
   await fs.writeFile(nodeVerificationPath, nodeVkey);
-  await exec(
-    buildCommand(cliPath, poolName, counter, filePath, nodeVerificationPath)
-  );
+  await exec(buildCommand(cliPath, counter, filePath, nodeVerificationPath));
 
   const fileContent = await readFile(filePath);
   await deleteFile(filePath);

@@ -3,17 +3,16 @@ import { JSONValue } from '../types';
 import { addressKeyGenCommand } from './address-key-gen-command';
 import { nodeNewCounterCommand } from './node-new-counter-command';
 import { promises as fs } from 'fs';
+import { uuid } from 'uuidv4';
 
 export interface NodeIssueOpCertParams {
   cliPath: string;
-  poolName: string;
   kesPeriod: number;
   counter: string;
 }
 
 const buildCommand = (
   cliPath: string,
-  poolName: string,
   kesPeriod: number,
   filePath: string,
   nodeVkeyPath: string,
@@ -31,18 +30,18 @@ const buildCommand = (
 
 export async function nodeIssueOpCertCommand(
   options: NodeIssueOpCertParams
-): Promise<JSONValue> {
-  const { cliPath, poolName, kesPeriod, counter } = options;
-  const filePath = `tmp/${poolName}.node.cert`;
+): Promise<string> {
+  const { cliPath, kesPeriod, counter } = options;
+  const UID = uuid();
+  const filePath = `tmp/${UID}.node.cert`;
   const { skey, vkey } = await addressKeyGenCommand({ cliPath });
   const nodeCounter = await nodeNewCounterCommand({
     cliPath,
-    poolName,
     counter,
   });
-  const nodeVkeyPath = `tmp/${poolName}.kes.vkey`;
-  const nodeSkeyPath = `tmp/${poolName}.node.skey`;
-  const nodeCounterPath = `tmp/${poolName}.node.counter`;
+  const nodeVkeyPath = `tmp/${UID}.kes.vkey`;
+  const nodeSkeyPath = `tmp/${UID}.node.skey`;
+  const nodeCounterPath = `tmp/${UID}.node.counter`;
   await fs.writeFile(nodeVkeyPath, vkey);
   await fs.writeFile(nodeSkeyPath, skey);
   await fs.writeFile(nodeCounterPath, nodeCounter);
@@ -50,7 +49,6 @@ export async function nodeIssueOpCertCommand(
   await exec(
     buildCommand(
       cliPath,
-      poolName,
       kesPeriod,
       filePath,
       nodeVkeyPath,

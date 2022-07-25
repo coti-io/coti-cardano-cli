@@ -1,8 +1,8 @@
 import { deleteFile, exec, readFile } from '../helpers';
+import { uuid } from 'uuidv4';
 
 export interface StakePoolIdParams {
   cliPath: string;
-  poolName: string;
 }
 
 const buildCommand = (cliPath: string, filePath: string): string => {
@@ -12,8 +12,9 @@ const buildCommand = (cliPath: string, filePath: string): string => {
 export async function stakePoolIdCommand(
   options: StakePoolIdParams
 ): Promise<string> {
-  const { cliPath, poolName } = options;
-  const filePath = `tmp/${poolName}.node.vkey`;
+  const { cliPath } = options;
+  const UID = uuid();
+  const filePath = `tmp/${UID}.node.vkey`;
   await exec(buildCommand(cliPath, filePath));
 
   const fileContent = await readFile(filePath);

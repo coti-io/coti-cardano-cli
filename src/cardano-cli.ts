@@ -198,22 +198,13 @@ export class CardanoCli {
     });
   }
 
-  async addressBuild(
-    account: string,
-    options: AddressBuildOptions
-  ): Promise<string> {
-    return buildAddressCommand(
-      options,
-      account,
-      this.cliPath,
-      this.networkParam
-    );
+  async addressBuild(options: AddressBuildOptions): Promise<string> {
+    return buildAddressCommand(options, this.cliPath, this.networkParam);
   }
 
-  async addressKeyHash(account: string): Promise<string> {
+  async addressKeyHash(): Promise<string> {
     return buildAddressKeyHashCommand({
       cliPath: this.cliPath,
-      account,
     });
   }
 
@@ -328,12 +319,11 @@ export class CardanoCli {
       network: this.network,
     });
   }
-  async stakeAddressKeyGen(account: string): Promise<Account> {
-    return stakeAddressKeyGenCommand({ account, cliPath: this.cliPath });
+  async stakeAddressKeyGen(): Promise<Account> {
+    return stakeAddressKeyGenCommand({ cliPath: this.cliPath });
   }
-  async stakeAddressBuild(account: string): Promise<string> {
+  async stakeAddressBuild(): Promise<string> {
     return stakeAddressBuildCommand({
-      account,
       cliPath: this.cliPath,
       network: this.network,
     });
@@ -345,74 +335,61 @@ export class CardanoCli {
     return tip.slot / (this.shelleyGenesis.slotsPerKESPeriod as number);
   }
 
-  async pool(poolName: string): Promise<Pool> {
-    return poolCommand({ cliPath: this.cliPath, poolName });
+  async pool(): Promise<Pool> {
+    return poolCommand({ cliPath: this.cliPath });
   }
 
-  async stakePoolId(poolName: string): Promise<string> {
-    return stakePoolIdCommand({ cliPath: this.cliPath, poolName });
+  async stakePoolId(): Promise<string> {
+    return stakePoolIdCommand({ cliPath: this.cliPath });
   }
 
-  async stakeAddressRegistrationCertificate(
-    account: string
-  ): Promise<JSONValue> {
+  async stakeAddressRegistrationCertificate(): Promise<JSONValue> {
     return stakeAddressRegistrationCommand({
       cliPath: this.cliPath,
-      account,
     });
   }
 
-  async stakeAddressDeregistrationCertificate(
-    account: string
-  ): Promise<JSONValue> {
+  async stakeAddressDeregistrationCertificate(): Promise<JSONValue> {
     return stakeAddressDeregistrationCommand({
       cliPath: this.cliPath,
-      account,
     });
   }
 
-  async stakeAddressDelegationCertificate(
-    account: string,
-    poolId: string
-  ): Promise<JSONValue> {
+  async stakeAddressDelegationCertificate(poolId: string): Promise<JSONValue> {
     return stakeAddressDelegationCommand({
       cliPath: this.cliPath,
-      account,
       poolId,
     });
   }
 
-  async stakeAddressKeyHash(account: string): Promise<string> {
-    return stakeAddressKeyHashCommand({ cliPath: this.cliPath, account });
+  async stakeAddressKeyHash(): Promise<string> {
+    return stakeAddressKeyHashCommand({ cliPath: this.cliPath });
   }
 
-  async nodeKeyGenKES(poolName: string): Promise<Account> {
-    return nodeKeyGenKesCommand({ cliPath: this.cliPath, poolName });
+  async nodeKeyGenKES(): Promise<Account> {
+    return nodeKeyGenKesCommand({ cliPath: this.cliPath });
   }
 
-  async nodeKeyGen(poolName: string, counter: string): Promise<Account> {
-    return nodeKeyGenCommand({ cliPath: this.cliPath, poolName, counter });
+  async nodeKeyGen(counter: string): Promise<Account> {
+    return nodeKeyGenCommand({ cliPath: this.cliPath, counter });
   }
   async nodeIssueOpCert(
-    poolName: string,
     counter: string,
     kesPeriod: number
   ): Promise<JSONValue> {
     const kesPeriodFinal = kesPeriod ? kesPeriod : await this.KESPeriod();
     return nodeIssueOpCertCommand({
       cliPath: this.cliPath,
-      poolName,
       kesPeriod: kesPeriodFinal,
       counter,
     });
   }
-  async nodeKeyGenVRF(poolName: string): Promise<Account> {
-    return nodeKeyGenVrfCommand({ cliPath: this.cliPath, poolName });
+  async nodeKeyGenVRF(): Promise<Account> {
+    return nodeKeyGenVrfCommand({ cliPath: this.cliPath });
   }
-  async nodeNewCounter(poolName: string, counter: string): Promise<string> {
+  async nodeNewCounter(counter: string): Promise<string> {
     return nodeNewCounterCommand({
       cliPath: this.cliPath,
-      poolName,
       counter,
     });
   }
@@ -422,26 +399,18 @@ export class CardanoCli {
   }
 
   async stakePoolRegistrationCertificate(
-    poolName: string,
-    account: string,
     options: StakePoolRegistrationOptions
   ): Promise<JSONValue> {
     return stakePoolRegistrationCommand({
       cliPath: this.cliPath,
-      poolName,
       options,
       network: this.network,
-      account,
     });
   }
 
-  async stakePoolDeregistrationCertificate(
-    poolName: string,
-    epoch: number
-  ): Promise<JSONValue> {
+  async stakePoolDeregistrationCertificate(epoch: number): Promise<JSONValue> {
     return stakePoolDeregistrationCommand({
       cliPath: this.cliPath,
-      poolName,
       epoch,
     });
   }

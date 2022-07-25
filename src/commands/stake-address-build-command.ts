@@ -1,10 +1,10 @@
 import { deleteFile, exec, readFile } from '../helpers';
 import { stakeAddressKeyGenCommand } from './stake-address-key-gen-command';
 import { promises as fs } from 'fs';
+import { uuid } from 'uuidv4';
 
 export interface StakeAddressBuildParams {
   cliPath: string;
-  account: string;
   network: string;
 }
 
@@ -24,10 +24,11 @@ const buildCommand = (
 export async function stakeAddressBuildCommand(
   options: StakeAddressBuildParams
 ): Promise<string> {
-  const { account, cliPath, network } = options;
-  const filePath = `tmp/${account}.stake.addr`;
-  const stakingVerificationPath = `tmp/${account}.stake.vkey`;
-  const stakeAddressKey = await stakeAddressKeyGenCommand({ account, cliPath });
+  const { cliPath, network } = options;
+  const UID = uuid();
+  const filePath = `tmp/${UID}.stake.addr`;
+  const stakingVerificationPath = `tmp/${UID}.stake.vkey`;
+  const stakeAddressKey = await stakeAddressKeyGenCommand({ cliPath });
   await fs.writeFile(stakingVerificationPath, stakeAddressKey);
   await exec(buildCommand(cliPath, network, filePath, stakingVerificationPath));
 

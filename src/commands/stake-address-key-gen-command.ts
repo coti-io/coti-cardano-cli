@@ -1,9 +1,9 @@
 import { checkFileExists, deleteFile, exec, readFile } from '../helpers';
 import { Account } from '../interfaces';
+import { uuid } from 'uuidv4';
 
 export interface StakeAddressKeyGenParams {
   cliPath: string;
-  account: string;
 }
 
 const buildCommand = (
@@ -20,9 +20,10 @@ const buildCommand = (
 export async function stakeAddressKeyGenCommand(
   options: StakeAddressKeyGenParams
 ): Promise<Account> {
-  const { cliPath, account } = options;
-  const vkeyFilePath = `tmp/${account}.stake.vkey`;
-  const skeyFilePath = `tmp/${account}.stake.skey`;
+  const { cliPath } = options;
+  const UID = uuid();
+  const vkeyFilePath = `tmp/${UID}.stake.vkey`;
+  const skeyFilePath = `tmp/${UID}.stake.skey`;
   if (await checkFileExists(vkeyFilePath))
     return Promise.reject(`${vkeyFilePath} file already exists`);
   if (await checkFileExists(skeyFilePath))

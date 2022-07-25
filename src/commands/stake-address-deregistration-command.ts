@@ -2,15 +2,14 @@ import { deleteFile, exec, readFile } from '../helpers';
 import { JSONValue } from '../types';
 import { stakeAddressKeyGenCommand } from './stake-address-key-gen-command';
 import { promises as fs } from 'fs';
+import { uuid } from 'uuidv4';
 
 export interface StakeAddressDeregistrationParams {
   cliPath: string;
-  account: string;
 }
 
 const buildCommand = (
   cliPath: string,
-  account: string,
   filePath: string,
   stakingVerificationPath: string
 ): string => {
@@ -23,13 +22,14 @@ const buildCommand = (
 export async function stakeAddressDeregistrationCommand(
   options: StakeAddressDeregistrationParams
 ): Promise<JSONValue> {
-  const { cliPath, account } = options;
-  const filePath = `tmp/${account}.stake.cert`;
-  const stakingVerificationPath = `tmp/${account}.stake.vkey`;
-  const stakeAddressKey = await stakeAddressKeyGenCommand({ account, cliPath });
+  const { cliPath } = options;
+  const UID = uuid();
+  const filePath = `tmp/${UID}.stake.cert`;
+  const stakingVerificationPath = `tmp/${UID}.stake.vkey`;
+  const stakeAddressKey = await stakeAddressKeyGenCommand({ cliPath });
   await fs.writeFile(stakingVerificationPath, stakeAddressKey);
 
-  await exec(buildCommand(cliPath, account, filePath, stakingVerificationPath));
+  await exec(buildCommand(cliPath, filePath, stakingVerificationPath));
   const fileContent = await readFile(filePath);
   await deleteFile(filePath);
   await deleteFile(stakingVerificationPath);

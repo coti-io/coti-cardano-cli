@@ -8,10 +8,10 @@ import { Account } from '../interfaces';
 import { addressKeyGenCommand } from './address-key-gen-command';
 import { nodeNewCounterCommand } from './node-new-counter-command';
 import { promises as fs } from 'fs';
+import { uuid } from 'uuidv4';
 
 export interface NodeKeyGenVrfParams {
   cliPath: string;
-  poolName: string;
 }
 
 const buildCommand = (cliPath: string, vkey: string, skey: string): string => {
@@ -24,9 +24,10 @@ const buildCommand = (cliPath: string, vkey: string, skey: string): string => {
 export async function nodeKeyGenVrfCommand(
   options: NodeKeyGenVrfParams
 ): Promise<Account> {
-  const { poolName, cliPath } = options;
-  const nodeVkeyPath = `tmp/${poolName}.kes.vkey`;
-  const nodeSkeyPath = `tmp/${poolName}.node.skey`;
+  const { cliPath } = options;
+  const UID = uuid();
+  const nodeVkeyPath = `tmp/${UID}.kes.vkey`;
+  const nodeSkeyPath = `tmp/${UID}.node.skey`;
   if (await checkFileExists(nodeVkeyPath))
     return Promise.reject(`${nodeVkeyPath} file already exists`);
   if (await checkFileExists(nodeSkeyPath))

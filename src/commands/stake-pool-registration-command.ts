@@ -10,18 +10,16 @@ import { JSONValue } from '../types';
 import { stakePoolIdCommand } from './stake-pool-id-command';
 import { stakeAddressKeyGenCommand } from './stake-address-key-gen-command';
 import { promises as fs } from 'fs';
+import { uuid } from 'uuidv4';
 
 export interface StakePoolRegistrationParams {
   cliPath: string;
-  poolName: string;
   network: string;
-  account: string;
   options: StakePoolRegistrationOptions;
 }
 
 const buildCommand = (
   cliPath: string,
-  poolName: string,
   options: StakePoolRegistrationOptions,
   owners: string,
   relays: string,
@@ -48,8 +46,9 @@ const buildCommand = (
 
 export async function stakePoolRegistrationCommand(
   input: StakePoolRegistrationParams
-): Promise<JSONValue> {
-  const { cliPath, poolName, options, network, account } = input;
+): Promise<string> {
+  const { cliPath, options, network } = input;
+  const UID = uuid();
 
   if (
     !(
@@ -69,23 +68,21 @@ export async function stakePoolRegistrationCommand(
   const owners = ownerToString(options.owners);
   const relays = relayToString(options.relays);
 
-  const nodeVkeyPath = `tmp/${poolName}.node.vkey`;
-  const vrfVkeyPath = `tmp/${poolName}.stake.vkey`;
+  const nodeVkeyPath = `tmp/${UID}.node.vkey`;
+  const vrfVkeyPath = `tmp/${UID}.stake.vkey`;
 
-  const nodeVkey = await stakePoolIdCommand({ cliPath, poolName });
+  const nodeVkey = await stakePoolIdCommand({ cliPath });
   const stakeVkey = await stakeAddressKeyGenCommand({
     cliPath,
-    account,
   });
 
   await fs.writeFile(nodeVkeyPath, nodeVkey);
   await fs.writeFile(vrfVkeyPath, stakeVkey);
 
-  const filePath = `tmp/${poolName}.pool.cert`;
+  const filePath = `tmp/${UID}.pool.cert`;
   await exec(
     buildCommand(
       cliPath,
-      poolName,
       options,
       owners,
       relays,

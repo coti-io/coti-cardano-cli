@@ -1,15 +1,14 @@
 import { deleteFile, exec, readFile } from '../helpers';
 import { addressKeyGenCommand } from './address-key-gen-command';
 import { promises as fs } from 'fs';
+import { uuid } from 'uuidv4';
 
 export interface AddressKeyGenParams {
   cliPath: string;
-  account: string;
 }
 
 const buildCommand = (
   cliPath: string,
-  account: string,
   filePath: string
 ): string => {
   return `${cliPath} address key-hash \
@@ -20,12 +19,13 @@ const buildCommand = (
 export async function buildAddressKeyHashCommand(
   options: AddressKeyGenParams
 ): Promise<string> {
-  const { account, cliPath } = options;
+  const { cliPath } = options;
+  const UUID = uuid();
   const { vkey } = await addressKeyGenCommand({ cliPath });
-  const filePath = `tmp/${account}.payment.vkey`;
+  const filePath = `tmp/${UUID}.payment.vkey`;
   await fs.writeFile(filePath, vkey);
 
-  const command = buildCommand(cliPath, account, filePath);
+  const command = buildCommand(cliPath, filePath);
   await exec(command);
 
   const fileContent = await readFile(filePath);

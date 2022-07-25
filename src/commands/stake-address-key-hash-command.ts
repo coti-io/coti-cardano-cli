@@ -1,15 +1,11 @@
 import { deleteFile, exec, readFile } from '../helpers';
+import { uuid } from 'uuidv4';
 
 export interface StakeAddressKeyHashParams {
   cliPath: string;
-  account: string;
 }
 
-const buildCommand = (
-  cliPath: string,
-  account: string,
-  filePath: string
-): string => {
+const buildCommand = (cliPath: string, filePath: string): string => {
   return `${cliPath} stake-address key-hash \
                         --staking-verification-key-file ${filePath} \
                     `;
@@ -18,9 +14,10 @@ const buildCommand = (
 export async function stakeAddressKeyHashCommand(
   options: StakeAddressKeyHashParams
 ): Promise<string> {
-  const { cliPath, account } = options;
-  const filePath = `tmp/${account}.stake.vkey`;
-  await exec(buildCommand(cliPath, account, filePath));
+  const { cliPath } = options;
+  const UID = uuid();
+  const filePath = `tmp/${UID}.stake.vkey`;
+  await exec(buildCommand(cliPath, filePath));
 
   const fileContent = await readFile(filePath);
   await deleteFile(filePath);

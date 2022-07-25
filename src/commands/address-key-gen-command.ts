@@ -2,6 +2,7 @@ import {
   buildRandomFilePath,
   deleteFile,
   exec,
+  readFile,
   readJsonFile,
 } from '../helpers';
 import { JSONValue } from '../types';
@@ -11,8 +12,8 @@ export interface AddressKeyGenParams {
 }
 
 export interface AddressKeyGenRes {
-  skey: JSONValue;
-  vkey: JSONValue;
+  skey: string;
+  vkey: string;
 }
 
 const buildCommand = (
@@ -34,8 +35,8 @@ export async function addressKeyGenCommand(
   const command = buildCommand(options.cliPath, vkeyFilePath, skeyFilePath);
   await exec(command);
 
-  const vkey = await readJsonFile(vkeyFilePath);
-  const skey = await readJsonFile(skeyFilePath);
+  const vkey = await readFile(vkeyFilePath);
+  const skey = await readFile(skeyFilePath);
   await deleteFile(vkeyFilePath);
   await deleteFile(skeyFilePath);
   return { vkey, skey };

@@ -158,7 +158,6 @@ export interface Wallet {
 }
 
 export interface Pool {
-  name: string;
   id: string;
 }
 
@@ -229,7 +228,7 @@ export interface Utxo {
 }
 
 export interface Account {
-  vkey: JSONValue;
-  skey: JSONValue;
+  vkey: string;
+  skey: string;
   counter?: string;
 }
