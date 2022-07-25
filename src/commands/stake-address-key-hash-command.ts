@@ -1,8 +1,10 @@
 import { deleteFile, exec, readFile } from '../helpers';
+import { promises as fs } from 'fs';
 import { uuid } from 'uuidv4';
 
 export interface StakeAddressKeyHashParams {
   cliPath: string;
+  vKey: string;
 }
 
 const buildCommand = (cliPath: string, filePath: string): string => {
@@ -14,13 +16,13 @@ const buildCommand = (cliPath: string, filePath: string): string => {
 export async function stakeAddressKeyHashCommand(
   options: StakeAddressKeyHashParams
 ): Promise<string> {
-  const { cliPath } = options;
+  const { cliPath, vKey } = options;
   const UID = uuid();
   const filePath = `tmp/${UID}.stake.vkey`;
-  await exec(buildCommand(cliPath, filePath));
+  await fs.writeFile(filePath, vKey);
+  const stdout = await exec(buildCommand(cliPath, filePath));
 
-  const fileContent = await readFile(filePath);
   await deleteFile(filePath);
 
-  return fileContent;
+  return stdout.trim();
 }

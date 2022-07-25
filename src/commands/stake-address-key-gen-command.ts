@@ -1,9 +1,11 @@
-import { checkFileExists, deleteFile, exec, readFile } from '../helpers';
-import { Account } from '../interfaces';
+import { deleteFile, exec } from '../helpers';
 import { uuid } from 'uuidv4';
+import { promises as fs } from 'fs';
 
 export interface StakeAddressKeyGenParams {
   cliPath: string;
+  vKey: string;
+  sKey: string;
 }
 
 const buildCommand = (
@@ -19,25 +21,19 @@ const buildCommand = (
 
 export async function stakeAddressKeyGenCommand(
   options: StakeAddressKeyGenParams
-): Promise<Account> {
-  const { cliPath } = options;
+): Promise<string> {
+  const { cliPath, vKey, sKey } = options;
   const UID = uuid();
   const vkeyFilePath = `tmp/${UID}.stake.vkey`;
   const skeyFilePath = `tmp/${UID}.stake.skey`;
-  if (await checkFileExists(vkeyFilePath))
-    return Promise.reject(`${vkeyFilePath} file already exists`);
-  if (await checkFileExists(skeyFilePath))
-    return Promise.reject(`${skeyFilePath} file already exists`);
-  await exec(buildCommand(cliPath, vkeyFilePath, skeyFilePath));
 
-  const vkeyFileContent = await readFile(vkeyFilePath);
-  const skeyFileContent = await readFile(skeyFilePath);
+  await fs.writeFile(vkeyFilePath, vKey);
+  await fs.writeFile(skeyFilePath, sKey);
+
+  const stdout = await exec(buildCommand(cliPath, vkeyFilePath, skeyFilePath));
 
   await deleteFile(vkeyFilePath);
   await deleteFile(skeyFilePath);
 
-  return {
-    vkey: vkeyFileContent,
-    skey: skeyFileContent,
-  };
+  return stdout.trim();
 }

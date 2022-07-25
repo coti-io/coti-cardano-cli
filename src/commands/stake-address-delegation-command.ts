@@ -7,6 +7,7 @@ import { uuid } from 'uuidv4';
 export interface StakeAddressDelegationParams {
   cliPath: string;
   poolId: string;
+  stakeVkey: string;
 }
 
 const buildCommand = (
@@ -25,12 +26,12 @@ const buildCommand = (
 export async function stakeAddressDelegationCommand(
   options: StakeAddressDelegationParams
 ): Promise<string> {
-  const { cliPath, poolId } = options;
+  const { cliPath, poolId, stakeVkey } = options;
   const UID = uuid();
   const filePath = `tmp/${UID}.deleg.cert`;
   const stakingVerificationPath = `tmp/${UID}.stake.vkey`;
-  const stakeAddressKey = await stakeAddressKeyGenCommand({ cliPath });
-  await fs.writeFile(stakingVerificationPath, stakeAddressKey);
+
+  await fs.writeFile(stakingVerificationPath, stakeVkey);
   await exec(buildCommand(cliPath, filePath, stakingVerificationPath, poolId));
 
   const fileContent = await readFile(filePath);

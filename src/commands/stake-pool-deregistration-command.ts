@@ -7,6 +7,7 @@ import { uuid } from 'uuidv4';
 export interface StakePoolDeregistrationParams {
   cliPath: string;
   epoch: number;
+  nodevKey: string;
 }
 
 const buildCommand = (
@@ -25,12 +26,12 @@ const buildCommand = (
 export async function stakePoolDeregistrationCommand(
   input: StakePoolDeregistrationParams
 ): Promise<string> {
-  const { cliPath, epoch } = input;
+  const { cliPath, epoch, nodevKey } = input;
   const UID = uuid();
   const filePath = `tmp/${UID}.pool.cert`;
   const nodeVkeyPath = `tmp/${UID}.node.vkey`;
-  const vkey = await stakePoolIdCommand({ cliPath });
-  await fs.writeFile(nodeVkeyPath, vkey);
+
+  await fs.writeFile(nodeVkeyPath, nodevKey);
   await exec(buildCommand(cliPath, epoch, filePath, nodeVkeyPath));
 
   const fileContent = readFile(filePath);

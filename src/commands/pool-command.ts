@@ -6,12 +6,13 @@ import { uuid } from 'uuidv4';
 
 export interface PoolParams {
   cliPath: string;
+  nodevKey: string;
 }
 
 export async function poolCommand(options: PoolParams): Promise<Pool> {
-  const { cliPath } = options;
+  const { cliPath, nodevKey } = options;
   const UID = uuid();
-  const id = await stakePoolIdCommand({ cliPath });
+  const id = await stakePoolIdCommand({ cliPath, nodevKey });
   const files = await fs.readdir('tmp/');
   const keysPath = {};
   files.forEach(file => {

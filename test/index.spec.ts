@@ -1,5 +1,4 @@
 import { CardanoCli, ProtocolParams, Tip, Transaction, Utxo } from '../src';
-import { AddressKeyGenRes } from '../src/commands/address-key-gen-command';
 
 describe('Cardano cli test with blockfrost', () => {
   jest.setTimeout(50000);

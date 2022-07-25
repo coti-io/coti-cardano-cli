@@ -25,10 +25,7 @@ import {
 import mainnetShelleyGenesis from './genesis-files/mainnet-shelley-genesis.json';
 import testnetShelleyGenesis from './genesis-files/testnet-shelley-genesis.json';
 import { JSONValue, Network } from './types';
-import {
-  addressKeyGenCommand,
-  AddressKeyGenRes,
-} from './commands/address-key-gen-command';
+import { addressKeyGenCommand } from './commands/address-key-gen-command';
 import { queryUTXOCommand } from './commands/query-utxo-command';
 import { queryTipCommand } from './commands/query-tip-command';
 import { queryProtocolParamsCommand } from './commands/query-protocol-params-command';
@@ -181,8 +178,8 @@ export class CardanoCli {
     });
   }
 
-  async addressKeyGen(): Promise<AddressKeyGenRes> {
-    return addressKeyGenCommand({ cliPath: this.cliPath });
+  async addressKeyGen(skey: string, vkey: string): Promise<string> {
+    return addressKeyGenCommand({ cliPath: this.cliPath, skey, vkey });
   }
 
   async transactionBuildRaw(options: Transaction): Promise<JSONValue> {
@@ -202,9 +199,10 @@ export class CardanoCli {
     return buildAddressCommand(options, this.cliPath, this.networkParam);
   }
 
-  async addressKeyHash(): Promise<string> {
+  async addressKeyHash(vkey: string): Promise<string> {
     return buildAddressKeyHashCommand({
       cliPath: this.cliPath,
+      vkey,
     });
   }
 
@@ -319,13 +317,14 @@ export class CardanoCli {
       network: this.network,
     });
   }
-  async stakeAddressKeyGen(): Promise<Account> {
-    return stakeAddressKeyGenCommand({ cliPath: this.cliPath });
+  async stakeAddressKeyGen(vKey: string, sKey: string): Promise<string> {
+    return stakeAddressKeyGenCommand({ cliPath: this.cliPath, vKey, sKey });
   }
-  async stakeAddressBuild(): Promise<string> {
+  async stakeAddressBuild(stakeVkey: string): Promise<string> {
     return stakeAddressBuildCommand({
       cliPath: this.cliPath,
       network: this.network,
+      stakeVkey,
     });
   }
 
@@ -335,62 +334,93 @@ export class CardanoCli {
     return tip.slot / (this.shelleyGenesis.slotsPerKESPeriod as number);
   }
 
-  async pool(): Promise<Pool> {
-    return poolCommand({ cliPath: this.cliPath });
+  async pool(nodevKey: string): Promise<Pool> {
+    return poolCommand({ cliPath: this.cliPath, nodevKey });
   }
 
-  async stakePoolId(): Promise<string> {
-    return stakePoolIdCommand({ cliPath: this.cliPath });
+  async stakePoolId(nodevKey: string): Promise<string> {
+    return stakePoolIdCommand({ cliPath: this.cliPath, nodevKey });
   }
 
-  async stakeAddressRegistrationCertificate(): Promise<JSONValue> {
+  async stakeAddressRegistrationCertificate(
+    stakingKey: string
+  ): Promise<JSONValue> {
     return stakeAddressRegistrationCommand({
       cliPath: this.cliPath,
+      stakingKey,
     });
   }
 
-  async stakeAddressDeregistrationCertificate(): Promise<JSONValue> {
+  async stakeAddressDeregistrationCertificate(
+    stakeVkey: string
+  ): Promise<JSONValue> {
     return stakeAddressDeregistrationCommand({
       cliPath: this.cliPath,
+      stakeVkey,
     });
   }
 
-  async stakeAddressDelegationCertificate(poolId: string): Promise<JSONValue> {
+  async stakeAddressDelegationCertificate(
+    poolId: string,
+    stakeVkey: string
+  ): Promise<JSONValue> {
     return stakeAddressDelegationCommand({
       cliPath: this.cliPath,
       poolId,
+      stakeVkey,
     });
   }
 
-  async stakeAddressKeyHash(): Promise<string> {
-    return stakeAddressKeyHashCommand({ cliPath: this.cliPath });
+  async stakeAddressKeyHash(vKey: string): Promise<string> {
+    return stakeAddressKeyHashCommand({ cliPath: this.cliPath, vKey });
   }
 
-  async nodeKeyGenKES(): Promise<Account> {
-    return nodeKeyGenKesCommand({ cliPath: this.cliPath });
+  async nodeKeyGenKES(vkey: string, skey: string): Promise<string> {
+    return nodeKeyGenKesCommand({ cliPath: this.cliPath, vkey, skey });
   }
 
-  async nodeKeyGen(counter: string): Promise<Account> {
-    return nodeKeyGenCommand({ cliPath: this.cliPath, counter });
+  async nodeKeyGen(
+    counter: string,
+    vkey: string,
+    nodeSkey: string,
+    nodeCounter: string
+  ): Promise<string> {
+    return nodeKeyGenCommand({
+      cliPath: this.cliPath,
+      counter,
+      vkey,
+      nodeSkey,
+      nodeCounter,
+    });
   }
   async nodeIssueOpCert(
-    counter: string,
-    kesPeriod: number
-  ): Promise<JSONValue> {
+    kesPeriod: number,
+    nodeCounter: string,
+    nodeVkey: string,
+    nodeSkey: string
+  ): Promise<string> {
     const kesPeriodFinal = kesPeriod ? kesPeriod : await this.KESPeriod();
     return nodeIssueOpCertCommand({
       cliPath: this.cliPath,
       kesPeriod: kesPeriodFinal,
-      counter,
+      nodeCounter,
+      nodeVkey,
+      nodeSkey,
     });
   }
-  async nodeKeyGenVRF(): Promise<Account> {
-    return nodeKeyGenVrfCommand({ cliPath: this.cliPath });
+  async nodeKeyGenVRF(skey: string, vkey: string): Promise<string> {
+    return nodeKeyGenVrfCommand({ cliPath: this.cliPath, skey, vkey });
   }
-  async nodeNewCounter(counter: string): Promise<string> {
+  async nodeNewCounter(
+    counter: string,
+    issueCounter: string,
+    nodeVkey: string
+  ): Promise<string> {
     return nodeNewCounterCommand({
       cliPath: this.cliPath,
       counter,
+      issueCounter,
+      nodeVkey,
     });
   }
 
@@ -399,19 +429,27 @@ export class CardanoCli {
   }
 
   async stakePoolRegistrationCertificate(
-    options: StakePoolRegistrationOptions
+    options: StakePoolRegistrationOptions,
+    stakePoolvkey: string,
+    nodeVkey: string
   ): Promise<JSONValue> {
     return stakePoolRegistrationCommand({
       cliPath: this.cliPath,
       options,
       network: this.network,
+      stakePoolvkey,
+      nodeVkey,
     });
   }
 
-  async stakePoolDeregistrationCertificate(epoch: number): Promise<JSONValue> {
+  async stakePoolDeregistrationCertificate(
+    epoch: number,
+    nodevKey: string
+  ): Promise<JSONValue> {
     return stakePoolDeregistrationCommand({
       cliPath: this.cliPath,
       epoch,
+      nodevKey,
     });
   }
 

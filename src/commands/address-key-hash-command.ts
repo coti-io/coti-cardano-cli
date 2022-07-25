@@ -1,35 +1,31 @@
-import { deleteFile, exec, readFile } from '../helpers';
-import { addressKeyGenCommand } from './address-key-gen-command';
+import { deleteFile, exec } from '../helpers';
 import { promises as fs } from 'fs';
 import { uuid } from 'uuidv4';
 
-export interface AddressKeyGenParams {
+export interface AddressKeyHashParams {
   cliPath: string;
+  vkey: string;
 }
 
-const buildCommand = (
-  cliPath: string,
-  filePath: string
-): string => {
+const buildCommand = (cliPath: string, filePath: string): string => {
   return `${cliPath} address key-hash \
                               --payment-verification-key-file ${filePath} \
                           `;
 };
 
 export async function buildAddressKeyHashCommand(
-  options: AddressKeyGenParams
+  options: AddressKeyHashParams
 ): Promise<string> {
-  const { cliPath } = options;
+  const { cliPath, vkey } = options;
   const UUID = uuid();
-  const { vkey } = await addressKeyGenCommand({ cliPath });
-  const filePath = `tmp/${UUID}.payment.vkey`;
-  await fs.writeFile(filePath, vkey);
 
-  const command = buildCommand(cliPath, filePath);
-  await exec(command);
+  const vKeyFilePath = `tmp/${UUID}.payment.vkey`;
+  await fs.writeFile(vKeyFilePath, vkey);
 
-  const fileContent = await readFile(filePath);
-  await deleteFile(filePath);
+  const command = buildCommand(cliPath, vKeyFilePath);
+  const stdout = await exec(command);
 
-  return fileContent.trim();
+  await deleteFile(vKeyFilePath);
+
+  return stdout.trim();
 }

@@ -1,8 +1,10 @@
 import { deleteFile, exec, readFile } from '../helpers';
 import { uuid } from 'uuidv4';
+import { promises as fs } from 'fs';
 
 export interface StakePoolIdParams {
   cliPath: string;
+  nodevKey: string;
 }
 
 const buildCommand = (cliPath: string, filePath: string): string => {
@@ -12,13 +14,13 @@ const buildCommand = (cliPath: string, filePath: string): string => {
 export async function stakePoolIdCommand(
   options: StakePoolIdParams
 ): Promise<string> {
-  const { cliPath } = options;
+  const { cliPath, nodevKey } = options;
   const UID = uuid();
-  const filePath = `tmp/${UID}.node.vkey`;
-  await exec(buildCommand(cliPath, filePath));
+  const vKeyFilePath = `tmp/${UID}.node.vkey`;
+  await fs.writeFile(vKeyFilePath, nodevKey);
+  const stdout = await exec(buildCommand(cliPath, vKeyFilePath));
 
-  const fileContent = await readFile(filePath);
-  await deleteFile(filePath);
+  await deleteFile(vKeyFilePath);
 
-  return fileContent.toString().replace(/\s+/g, ' ');
+  return stdout.trim();
 }

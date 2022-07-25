@@ -18,10 +18,9 @@ export async function stakePoolMetadaCommand(
 
   const filePath = 'tmp/poolmeta.json';
   await fs.writeFile(filePath, metadata);
-  await exec(buildCommand(cliPath, filePath));
+  const stdout = await exec(buildCommand(cliPath, filePath));
 
-  const fileContent = await readFile(filePath);
   await deleteFile(filePath);
 
-  return fileContent.replace(/\s+/g, ' ');
+  return stdout.replace(/\s+/g, ' ');
 }

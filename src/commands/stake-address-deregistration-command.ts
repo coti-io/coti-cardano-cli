@@ -6,6 +6,7 @@ import { uuid } from 'uuidv4';
 
 export interface StakeAddressDeregistrationParams {
   cliPath: string;
+  stakeVkey: string;
 }
 
 const buildCommand = (
@@ -22,14 +23,14 @@ const buildCommand = (
 export async function stakeAddressDeregistrationCommand(
   options: StakeAddressDeregistrationParams
 ): Promise<JSONValue> {
-  const { cliPath } = options;
+  const { cliPath, stakeVkey } = options;
   const UID = uuid();
   const filePath = `tmp/${UID}.stake.cert`;
   const stakingVerificationPath = `tmp/${UID}.stake.vkey`;
-  const stakeAddressKey = await stakeAddressKeyGenCommand({ cliPath });
-  await fs.writeFile(stakingVerificationPath, stakeAddressKey);
 
+  await fs.writeFile(stakingVerificationPath, stakeVkey);
   await exec(buildCommand(cliPath, filePath, stakingVerificationPath));
+
   const fileContent = await readFile(filePath);
   await deleteFile(filePath);
   await deleteFile(stakingVerificationPath);

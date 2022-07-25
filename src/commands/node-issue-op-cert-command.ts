@@ -8,7 +8,9 @@ import { uuid } from 'uuidv4';
 export interface NodeIssueOpCertParams {
   cliPath: string;
   kesPeriod: number;
-  counter: string;
+  nodeCounter: string;
+  nodeVkey: string;
+  nodeSkey: string;
 }
 
 const buildCommand = (
@@ -31,19 +33,16 @@ const buildCommand = (
 export async function nodeIssueOpCertCommand(
   options: NodeIssueOpCertParams
 ): Promise<string> {
-  const { cliPath, kesPeriod, counter } = options;
+  const { cliPath, kesPeriod, nodeCounter, nodeSkey, nodeVkey } = options;
   const UID = uuid();
   const filePath = `tmp/${UID}.node.cert`;
-  const { skey, vkey } = await addressKeyGenCommand({ cliPath });
-  const nodeCounter = await nodeNewCounterCommand({
-    cliPath,
-    counter,
-  });
+
   const nodeVkeyPath = `tmp/${UID}.kes.vkey`;
   const nodeSkeyPath = `tmp/${UID}.node.skey`;
   const nodeCounterPath = `tmp/${UID}.node.counter`;
-  await fs.writeFile(nodeVkeyPath, vkey);
-  await fs.writeFile(nodeSkeyPath, skey);
+
+  await fs.writeFile(nodeVkeyPath, nodeVkey);
+  await fs.writeFile(nodeSkeyPath, nodeSkey);
   await fs.writeFile(nodeCounterPath, nodeCounter);
 
   await exec(

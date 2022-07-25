@@ -12,6 +12,8 @@ import { uuid } from 'uuidv4';
 
 export interface NodeKeyGenVrfParams {
   cliPath: string;
+  skey: string;
+  vkey: string;
 }
 
 const buildCommand = (cliPath: string, vkey: string, skey: string): string => {
@@ -23,28 +25,19 @@ const buildCommand = (cliPath: string, vkey: string, skey: string): string => {
 
 export async function nodeKeyGenVrfCommand(
   options: NodeKeyGenVrfParams
-): Promise<Account> {
-  const { cliPath } = options;
+): Promise<string> {
+  const { cliPath, skey, vkey } = options;
   const UID = uuid();
   const nodeVkeyPath = `tmp/${UID}.kes.vkey`;
   const nodeSkeyPath = `tmp/${UID}.node.skey`;
-  if (await checkFileExists(nodeVkeyPath))
-    return Promise.reject(`${nodeVkeyPath} file already exists`);
-  if (await checkFileExists(nodeSkeyPath))
-    return Promise.reject(`${nodeSkeyPath} file already exists`);
-
-  const { skey, vkey } = await addressKeyGenCommand({ cliPath });
 
   await fs.writeFile(nodeVkeyPath, vkey);
   await fs.writeFile(nodeSkeyPath, skey);
 
-  await exec(buildCommand(cliPath, JSON.stringify(vkey), JSON.stringify(skey)));
+  const stdout = await exec(buildCommand(cliPath, nodeVkeyPath, nodeSkeyPath));
 
   await deleteFile(nodeVkeyPath);
   await deleteFile(nodeSkeyPath);
 
-  return {
-    vkey,
-    skey,
-  };
+  return stdout.trim();
 }

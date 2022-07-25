@@ -6,6 +6,8 @@ import { uuid } from 'uuidv4';
 export interface NodeNewCounterParams {
   cliPath: string;
   counter: string;
+  nodeVkey: string;
+  issueCounter: string;
 }
 
 const buildCommand = (
@@ -24,19 +26,20 @@ const buildCommand = (
 export async function nodeNewCounterCommand(
   options: NodeNewCounterParams
 ): Promise<string> {
-  const { cliPath, counter } = options;
+  const { cliPath, counter, nodeVkey, issueCounter } = options;
   const UID = uuid();
 
-  const filePath = `tmp/${UID}.node.counter`;
+  const issueCounterFilePath = `tmp/${UID}.node.counter`;
   const nodeVerificationPath = `tmp/${UID}.node.vkey`;
-  const nodeVkey = await stakePoolIdCommand({ cliPath });
 
   await fs.writeFile(nodeVerificationPath, nodeVkey);
-  await exec(buildCommand(cliPath, counter, filePath, nodeVerificationPath));
+  await fs.writeFile(issueCounterFilePath, issueCounter);
+  const stdout = await exec(
+    buildCommand(cliPath, counter, issueCounterFilePath, nodeVerificationPath)
+  );
 
-  const fileContent = await readFile(filePath);
-  await deleteFile(filePath);
+  await deleteFile(issueCounterFilePath);
   await deleteFile(nodeVerificationPath);
 
-  return fileContent;
+  return stdout.trim();
 }

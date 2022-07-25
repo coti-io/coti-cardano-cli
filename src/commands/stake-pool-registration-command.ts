@@ -15,6 +15,8 @@ import { uuid } from 'uuidv4';
 export interface StakePoolRegistrationParams {
   cliPath: string;
   network: string;
+  stakePoolvkey: string;
+  nodeVkey: string;
   options: StakePoolRegistrationOptions;
 }
 
@@ -47,7 +49,7 @@ const buildCommand = (
 export async function stakePoolRegistrationCommand(
   input: StakePoolRegistrationParams
 ): Promise<string> {
-  const { cliPath, options, network } = input;
+  const { cliPath, options, network, stakePoolvkey, nodeVkey } = input;
   const UID = uuid();
 
   if (
@@ -71,13 +73,8 @@ export async function stakePoolRegistrationCommand(
   const nodeVkeyPath = `tmp/${UID}.node.vkey`;
   const vrfVkeyPath = `tmp/${UID}.stake.vkey`;
 
-  const nodeVkey = await stakePoolIdCommand({ cliPath });
-  const stakeVkey = await stakeAddressKeyGenCommand({
-    cliPath,
-  });
-
   await fs.writeFile(nodeVkeyPath, nodeVkey);
-  await fs.writeFile(vrfVkeyPath, stakeVkey);
+  await fs.writeFile(vrfVkeyPath, stakePoolvkey);
 
   const filePath = `tmp/${UID}.pool.cert`;
   await exec(

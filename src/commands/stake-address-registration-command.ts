@@ -6,6 +6,7 @@ import { uuid } from 'uuidv4';
 
 export interface StakeAddressRegistrationParams {
   cliPath: string;
+  stakingKey: string;
 }
 
 const buildCommand = (
@@ -22,12 +23,12 @@ const buildCommand = (
 export async function stakeAddressRegistrationCommand(
   options: StakeAddressRegistrationParams
 ): Promise<JSONValue> {
-  const { cliPath } = options;
+  const { cliPath, stakingKey } = options;
   const UID = uuid();
   const filePath = `tmp/${UID}.stake.cert`;
   const stakingKeyFilePath = `tmp/${UID}.stake.vkey`;
-  const { vkey } = await stakeAddressKeyGenCommand({ cliPath });
-  await fs.writeFile(stakingKeyFilePath, vkey);
+
+  await fs.writeFile(stakingKeyFilePath, stakingKey);
   await exec(buildCommand(cliPath, filePath, stakingKeyFilePath));
 
   const fileContent = await readFile(filePath);
