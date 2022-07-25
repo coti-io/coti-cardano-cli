@@ -25,7 +25,7 @@ import {
 import mainnetShelleyGenesis from './genesis-files/mainnet-shelley-genesis.json';
 import testnetShelleyGenesis from './genesis-files/testnet-shelley-genesis.json';
 import { JSONValue, Network } from './types';
-import { addressKeyGenCommand } from './commands/address-key-gen-command';
+import {addressKeyGenCommand, AddressKeyGenRes} from './commands/address-key-gen-command';
 import { queryUTXOCommand } from './commands/query-utxo-command';
 import { queryTipCommand } from './commands/query-tip-command';
 import { queryProtocolParamsCommand } from './commands/query-protocol-params-command';
@@ -47,7 +47,7 @@ import { transactionIdCommand } from './commands/transaction-id-command';
 import { transactionSubmitCommand } from './commands/transaction-submit-command';
 import { transactionViewCommand } from './commands/transaction-view-command';
 import { queryStakeCommand } from './commands/query-stakes-command';
-import { stakeAddressKeyGenCommand } from './commands/stake-address-key-gen-command';
+import {stakeAddressKeyGenCommand, StakeAddressKeyGenRes} from './commands/stake-address-key-gen-command';
 import { stakeAddressBuildCommand } from './commands/stake-address-build-command';
 import { stakePoolIdCommand } from './commands/stake-pool-id-command';
 import { poolCommand } from './commands/pool-command';
@@ -55,7 +55,7 @@ import { stakeAddressRegistrationCommand } from './commands/stake-address-regist
 import { stakeAddressDeregistrationCommand } from './commands/stake-address-deregistration-command';
 import { stakeAddressDelegationCommand } from './commands/stake-address-delegation-command';
 import { stakeAddressKeyHashCommand } from './commands/stake-address-key-hash-command';
-import { nodeKeyGenKesCommand } from './commands/node-key-gen-kes-command';
+import {nodeKeyGenKesCommand, NodeKeyGenKesRes} from './commands/node-key-gen-kes-command';
 import { nodeKeyGenCommand } from './commands/node-key-gen-command';
 import { nodeIssueOpCertCommand } from './commands/node-issue-op-cert-command';
 import { nodeKeyGenVrfCommand } from './commands/node-key-gen-vrf-command';
@@ -178,8 +178,8 @@ export class CardanoCli {
     });
   }
 
-  async addressKeyGen(skey: string, vkey: string): Promise<string> {
-    return addressKeyGenCommand({ cliPath: this.cliPath, skey, vkey });
+  async addressKeyGen(skey: string, vkey: string): Promise<AddressKeyGenRes> {
+    return addressKeyGenCommand({ cliPath: this.cliPath });
   }
 
   async transactionBuildRaw(options: Transaction): Promise<JSONValue> {
@@ -317,8 +317,8 @@ export class CardanoCli {
       network: this.network,
     });
   }
-  async stakeAddressKeyGen(vKey: string, sKey: string): Promise<string> {
-    return stakeAddressKeyGenCommand({ cliPath: this.cliPath, vKey, sKey });
+  async stakeAddressKeyGen(): Promise<StakeAddressKeyGenRes> {
+    return stakeAddressKeyGenCommand({ cliPath: this.cliPath });
   }
   async stakeAddressBuild(stakeVkey: string): Promise<string> {
     return stakeAddressBuildCommand({
@@ -375,8 +375,8 @@ export class CardanoCli {
     return stakeAddressKeyHashCommand({ cliPath: this.cliPath, vKey });
   }
 
-  async nodeKeyGenKES(vkey: string, skey: string): Promise<string> {
-    return nodeKeyGenKesCommand({ cliPath: this.cliPath, vkey, skey });
+  async nodeKeyGenKES(): Promise<NodeKeyGenKesRes> {
+    return nodeKeyGenKesCommand({ cliPath: this.cliPath });
   }
 
   async nodeKeyGen(

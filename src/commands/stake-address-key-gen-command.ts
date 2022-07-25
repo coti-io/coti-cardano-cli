@@ -1,11 +1,14 @@
-import { deleteFile, exec } from '../helpers';
+import {deleteFile, exec, readFile} from '../helpers';
 import { uuid } from 'uuidv4';
 import { promises as fs } from 'fs';
 
 export interface StakeAddressKeyGenParams {
   cliPath: string;
-  vKey: string;
-  sKey: string;
+}
+
+export interface  StakeAddressKeyGenRes {
+  vkey: string;
+  skey: string;
 }
 
 const buildCommand = (
@@ -21,19 +24,18 @@ const buildCommand = (
 
 export async function stakeAddressKeyGenCommand(
   options: StakeAddressKeyGenParams
-): Promise<string> {
-  const { cliPath, vKey, sKey } = options;
+): Promise<StakeAddressKeyGenRes> {
+  const { cliPath } = options;
   const UID = uuid();
   const vkeyFilePath = `tmp/${UID}.stake.vkey`;
   const skeyFilePath = `tmp/${UID}.stake.skey`;
 
-  await fs.writeFile(vkeyFilePath, vKey);
-  await fs.writeFile(skeyFilePath, sKey);
 
-  const stdout = await exec(buildCommand(cliPath, vkeyFilePath, skeyFilePath));
-
+  await exec(buildCommand(cliPath, vkeyFilePath, skeyFilePath));
+  const vkey = await readFile(vkeyFilePath);
+  const skey = await readFile(skeyFilePath);
   await deleteFile(vkeyFilePath);
   await deleteFile(skeyFilePath);
 
-  return stdout.trim();
+  return { skey, vkey };
 }
