@@ -1,9 +1,4 @@
-import {
-  buildRandomFilePath,
-  deleteFile,
-  exec,
-  readFile,
-} from '../helpers';
+import { buildRandomFilePath, deleteFile, exec, readFile } from '../helpers';
 
 export interface AddressKeyGenParams {
   cliPath: string;
@@ -31,7 +26,6 @@ export async function addressKeyGenCommand(
   const vkeyFilePath = buildRandomFilePath();
   const skeyFilePath = buildRandomFilePath();
 
-
   const command = buildCommand(options.cliPath, vkeyFilePath, skeyFilePath);
   await exec(command);
 
@@ -39,5 +33,5 @@ export async function addressKeyGenCommand(
   const skey = await readFile(skeyFilePath);
   await deleteFile(vkeyFilePath);
   await deleteFile(skeyFilePath);
-  return {skey, vkey};
+  return { skey, vkey };
 }
