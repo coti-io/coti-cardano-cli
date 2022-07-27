@@ -42,6 +42,7 @@ describe('Cardano cli test with blockfrost', () => {
             'addr_test1qr3pzzn4yhsgtxfj55y0wwlumnxllsumv8a98wst6sh4z6p4g663hkrkp8plfjl3epmegfedayyghgtpkmn2c9df3ddsa47p0d',
           value: { lovelace: '100000000' },
           datumHash: '',
+          referenceScript: '',
         },
 
         {
@@ -49,6 +50,7 @@ describe('Cardano cli test with blockfrost', () => {
             'addr_test1qr3pzzn4yhsgtxfj55y0wwlumnxllsumv8a98wst6sh4z6p4g663hkrkp8plfjl3epmegfedayyghgtpkmn2c9df3ddsa47p0d',
           value: { lovelace: '798000000' },
           datumHash: '',
+          referenceScript: '',
         },
       ],
       fee: 1000000,

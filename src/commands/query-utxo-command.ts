@@ -1,5 +1,6 @@
-import { exec } from '../helpers';
+import { deleteFile, exec, readFile } from '../helpers';
 import { Utxo } from '../interfaces';
+import { uuid } from 'uuidv4';
 
 export interface QueryUtxoParamsParams {
   cliPath: string;
@@ -10,27 +11,35 @@ export interface QueryUtxoParamsParams {
 const buildCommand = (
   cliPath: string,
   networkParam: string,
-  address: string
+  address: string,
+  filePath: string
 ): string => {
   return `${cliPath} query utxo \
             ${networkParam} \
             --address ${address} \
             --cardano-mode
+            --out-file ${filePath}
             `;
 };
 
 export async function queryUTXOCommand(
   options: QueryUtxoParamsParams
 ): Promise<Utxo[]> {
+  const UID = uuid();
+  const utxosPath = `tmp/${UID}.utxos`;
   const command = buildCommand(
     options.cliPath,
     options.networkParam,
-    options.address
+    options.address,
+    utxosPath
   );
-  const stdout = await exec(command);
+  await exec(command);
+
+  const fileContent = await readFile(utxosPath);
+  await deleteFile(utxosPath);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const utxos = stdout.split('\n');
+  const utxos = fileContent.split('\n');
   utxos.splice(0, 1);
   utxos.splice(0, 1);
   utxos.splice(utxos.length - 1, 1);

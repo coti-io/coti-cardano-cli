@@ -9,24 +9,27 @@ export interface TransactionCalculateMinRequiredParams {
   value: TxOut;
   networkParam: string;
   protocolParameters: ProtocolParams;
+  era: string;
 }
 
 const buildCommand = (
   cliPath: string,
   address: string,
   multiAsset: string,
-  protocolParametersPath: string
+  protocolParametersPath: string,
+  era: string
 ): string => {
   return `${cliPath} transaction calculate-min-required-utxo \
-                --babbage-era \
+                ${era}   
                 --tx-out ${address}+${multiAsset} \
-                --protocol-params-file ${protocolParametersPath}`;
+                --protocol-params-file ${protocolParametersPath}
+                `;
 };
 
 export async function transactionCalculateMinRequiredUtxoCommand(
   options: TransactionCalculateMinRequiredParams
 ): Promise<string> {
-  const { protocolParameters } = options;
+  const { protocolParameters, era } = options;
   const UUID = uuid();
   const protocolParametersPath = `tmp/protocol-parameters-${UUID}.json`;
   await fs.writeFile(
@@ -35,17 +38,17 @@ export async function transactionCalculateMinRequiredUtxoCommand(
   );
   const multiAsset = multiAssetToString(options.value);
 
-  await exec(
+  const stdout = await exec(
     buildCommand(
       options.cliPath,
       options.address,
       multiAsset,
-      protocolParametersPath
+      protocolParametersPath,
+      era
     )
   );
 
-  const fileContent = await readFile(protocolParametersPath);
   await deleteFile(protocolParametersPath);
 
-  return fileContent.replace(/\s+/g, ' ').split(' ')[1];
+  return stdout.replace(/\s+/g, ' ').split(' ')[1];
 }

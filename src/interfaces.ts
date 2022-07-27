@@ -5,7 +5,7 @@ export interface ConstructorOptions {
   socketPath?: string;
   cliPath?: string;
   dir?: string;
-  era?: string;
+  era?: Eras;
   network?: Network;
   httpProvider?: string;
   testnetMagic?: TestnetMagic;
@@ -37,8 +37,10 @@ export interface ProtocolParams {
 
 export interface AddressBuildOptions {
   paymentVkey?: string;
-  stakeVkey?: string;
+  paymentVkeyFilePath?: string;
   paymentScript?: string;
+  stakeVkey?: string;
+  stakeVkeyFilePath?: string;
   stakeScript?: string;
 }
 
@@ -68,7 +70,7 @@ export interface TransactionSignOptions {
 export interface TransactionWitnessOptions {
   txBody: string;
   signingKey: string;
-  scriptFile?: string;
+  address: string;
 }
 
 export interface TransactionAssembleOptions {
@@ -186,6 +188,7 @@ export interface TxOut {
   address: string;
   value: { [key: string]: string };
   datumHash: string;
+  referenceScript: string;
 }
 
 export interface TxInCollateral {
@@ -231,4 +234,13 @@ export interface Account {
   vkey: string;
   skey: string;
   counter?: string;
+}
+
+export enum Eras {
+  'BYRON' = 'byron',
+  'SHELLEY' = 'shelley',
+  'ALLEGRA' = 'allegra',
+  'MARY' = 'mary',
+  'ALONZO' = 'alonzo',
+  'BABBAGE' = 'babbage',
 }

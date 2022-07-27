@@ -1,19 +1,23 @@
 import { deleteFile, exec, readFile } from '../helpers';
 import { TransactionWitnessOptions } from '../interfaces';
 import { uuid } from 'uuidv4';
+import { promises as fs } from 'fs';
 
 const buildCommand = (
   cliPath: string,
   networkParam: string,
   txBody: string,
   filePath: string,
-  signingParams: string
+  signingParams: string,
+  address: string
 ): string => {
   return `${cliPath} transaction witness \
         --tx-body-file ${txBody} \
         ${networkParam} \
-        --out-file ${filePath} \
-        ${signingParams}`;
+        --signing-key-file ${signingParams} \
+        --address ${address} \
+        --out-file ${filePath} 
+        `;
 };
 
 export async function transactionWitnessCommand(
@@ -21,26 +25,32 @@ export async function transactionWitnessCommand(
   cliPath: string,
   networkParam: string
 ): Promise<string> {
+  const { txBody, signingKey, address } = options;
   const UID = uuid();
-  if (!options.signingKey && !options.scriptFile) {
-    throw new Error(
-      'script-file or signing-key required for transaction witness command'
-    );
+  if (!options.signingKey) {
+    throw new Error('signing-key required for transaction witness command');
   }
-  let signingParams = '';
-  if (options.scriptFile) {
-    signingParams += `--script-file ${options.scriptFile} `;
-  }
-  if (options.signingKey) {
-    signingParams += `--signing-key-file ${options.signingKey}`;
-  }
+  const txBodyFilePath = `tmp/${UID}.txBody`;
+  const signingKeyFilePath = `tmp/${UID}.signingkey`;
+  await fs.writeFile(txBodyFilePath, txBody);
+  await fs.writeFile(signingKeyFilePath, signingKey);
+
   const filePath = `tmp/tx_${UID}.witness`;
   await exec(
-    buildCommand(cliPath, networkParam, options.txBody, filePath, signingParams)
+    buildCommand(
+      cliPath,
+      networkParam,
+      txBodyFilePath,
+      filePath,
+      signingKeyFilePath,
+      address
+    )
   );
 
   const fileContent = await readFile(filePath);
   await deleteFile(filePath);
+  await deleteFile(txBodyFilePath);
+  await deleteFile(signingKeyFilePath);
 
   return fileContent;
 }

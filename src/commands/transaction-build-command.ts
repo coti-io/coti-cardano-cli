@@ -32,7 +32,7 @@ interface ValidateTransaction {
   mintString: string;
   withdrawals: string;
   certs: string;
-  metadata: string;
+  metadataFilePath: string;
   auxScript: string;
   scriptInvalid: string;
   witnessOverride: string;
@@ -68,7 +68,7 @@ const buildCommand = (options: {
                 ${transaction.withdrawals} \
                 ${transaction.mintString} \
                 ${transaction.auxScript} \
-                ${transaction.metadata} \
+                ${transaction.metadataFilePath} \
                 ${transaction.scriptInvalid} \
                 ${transaction.witnessOverride} \
                 --invalid-hereafter ${
@@ -110,7 +110,7 @@ export async function transactionBuildCommand(
     ? await withdrawalToString(transaction.withdrawals)
     : '';
   const certs = transaction.certs ? await certToString(transaction.certs) : '';
-  const metadata = transaction.metadata
+  const metadataFilePath = transaction.metadata
     ? '--metadata-json-file ' +
       (await jsonToPath(transaction.metadata, 'metadata'))
     : '';
@@ -137,7 +137,7 @@ export async function transactionBuildCommand(
     mintString,
     withdrawals,
     certs,
-    metadata,
+    metadataFilePath,
     auxScript,
     scriptInvalid,
     witnessOverride,
@@ -161,6 +161,7 @@ export async function transactionBuildCommand(
 
   await deleteFile(filePath);
   await deleteFile(protocolParametersPath);
+  await deleteFile(metadataFilePath);
 
   return fileContent;
 }

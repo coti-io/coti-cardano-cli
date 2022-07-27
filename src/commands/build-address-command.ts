@@ -7,8 +7,10 @@ export interface BuildAddressCommand {
   cliPath: string;
   networkParam: string;
   paymentVkey: string;
-  stakeVkey: string;
+  paymentVkeyPath: string;
   paymentScript: string;
+  stakeVkey: string;
+  stakeVkeyPath: string;
   stakeScript: string;
   filePath: string;
 }
@@ -17,17 +19,27 @@ const buildCommand = (options: BuildAddressCommand): string => {
   return `${options.cliPath} address build \
                     ${
                       options.paymentVkey
-                        ? `--payment-verification-key-file ${options.paymentVkey}`
+                        ? `--payment-verification-key-file ${options.paymentVkeyPath}`
                         : ''
                     } \
                     ${
-                      options.stakeVkey
-                        ? `--staking-verification-key-file ${options.stakeVkey}`
+                      options.paymentVkey
+                        ? `--payment-verification-key ${options.paymentVkey}`
                         : ''
                     } \
                     ${
                       options.paymentScript
                         ? `--payment-script-file ${options.paymentScript}`
+                        : ''
+                    } \
+                    ${
+                      options.stakeVkey
+                        ? `--stake-verification-key ${options.stakeVkey}`
+                        : ''
+                    } \
+                    ${
+                      options.stakeVkeyPath
+                        ? `--stake-verification-key-file ${options.stakeVkeyPath}`
                         : ''
                     } \
                     ${
@@ -46,7 +58,6 @@ export async function buildAddressCommand(
   networkParam: string
 ): Promise<string> {
   const UID = uuid();
-
   let paymentVkeyPath = '';
   let stakeVkeyPath = '';
   let paymentScriptPath = '';
@@ -75,8 +86,10 @@ export async function buildAddressCommand(
     cliPath: cliPath,
     networkParam: networkParam,
     paymentVkey: paymentVkeyPath,
-    stakeVkey: stakeVkeyPath,
+    paymentVkeyPath: options.paymentVkeyFilePath || '',
     paymentScript: paymentScriptPath,
+    stakeVkey: stakeVkeyPath,
+    stakeVkeyPath: options.stakeVkeyFilePath || '',
     stakeScript: stakeScriptPath,
     filePath,
   };

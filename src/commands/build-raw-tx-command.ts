@@ -46,7 +46,6 @@ const buildCommand = (
 ): string => {
   const { transaction, cliPath, era } = options;
   return `${cliPath} transaction build-raw \
-                --babbage-era \
                 ${commandInput.txInString} \
                 ${commandInput.txOutString} \
                 ${commandInput.txInCollateralString} \

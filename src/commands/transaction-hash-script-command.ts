@@ -5,7 +5,7 @@ export interface TransactionHashScriptDataParams {
   cliPath: string;
   script: JSONValue;
 }
-
+// TODO add --script-data-file as optional
 const buildCommand = (cliPath: string, script: JSONValue): string => {
   return `${cliPath} transaction hash-script-data --script-data-value '${JSON.stringify(
     script

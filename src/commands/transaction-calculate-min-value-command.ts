@@ -8,37 +8,59 @@ export interface TransactionCalculateMinValueParams {
   txOut: TxOut;
   protocolParameters: ProtocolParams;
   networkParam: string;
+  era: string;
 }
 
 const buildCommand = (
   txOut: TxOut,
   multiAsset: string,
   cliPath: string,
-  protocolParametersPath: string
+  protocolParametersPath: string,
+  era: string,
+  txOutDatumHash: string,
+  txOutReferenceScript: string
 ): string => {
   return `${cliPath} transaction calculate-min-required-utxo \
+                ${era}
                 --tx-out ${multiAsset} \
-                --protocol-params-file ${protocolParametersPath}`;
+                --protocol-params-file ${protocolParametersPath} \
+                --tx-out-datum-hash ${txOutDatumHash}
+                --tx-out-reference-script-file ${txOutReferenceScript}
+`;
 };
 
 export async function transactionCalculateMinValueCommand(
   input: TransactionCalculateMinValueParams
 ): Promise<string> {
-  const { protocolParameters } = input;
+  const { protocolParameters, era, txOut } = input;
+  const { datumHash, referenceScript } = txOut;
   const UID = uuid();
   const protocolParametersPath = `tmp/protocolParameters_${UID}.json`;
+  const txDatumHashPath = `tmp/protocolParameters_${UID}.json`;
+  const txOutReferenceScriptPath = `tmp/protocolParameters_${UID}.json`;
   await fs.writeFile(
     protocolParametersPath,
     JSON.stringify(protocolParameters)
   );
+  await fs.writeFile(txDatumHashPath, datumHash);
+  await fs.writeFile(txOutReferenceScriptPath, referenceScript);
   const multiAsset = multiAssetToString(input.txOut);
 
-  await exec(
-    buildCommand(input.txOut, multiAsset, input.cliPath, protocolParametersPath)
+  const stdout = await exec(
+    buildCommand(
+      input.txOut,
+      multiAsset,
+      input.cliPath,
+      protocolParametersPath,
+      era,
+      txDatumHashPath,
+      txOutReferenceScriptPath
+    )
   );
 
-  const fileContent = await readFile(protocolParametersPath);
   await deleteFile(protocolParametersPath);
+  await deleteFile(txDatumHashPath);
+  await deleteFile(txOutReferenceScriptPath);
 
-  return fileContent.replace(/\s+/g, ' ').split(' ')[1];
+  return stdout.replace(/\s+/g, ' ').split(' ')[1];
 }

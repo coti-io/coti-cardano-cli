@@ -1,7 +1,6 @@
 import { exec } from '../helpers';
 import { uuid } from 'uuidv4';
 import { promises as fs } from 'fs';
-import { transactionIdCommand } from './transaction-id-command';
 
 export interface TransactionSubmitParams {
   cliPath: string;
@@ -11,10 +10,10 @@ export interface TransactionSubmitParams {
 
 const buildCommand = (
   cliPath: string,
-  parsedTx: string,
+  txFilePath: string,
   networkParam: string
 ): string => {
-  return `${cliPath} transaction submit ${networkParam} --tx-file ${parsedTx}`;
+  return `${cliPath} transaction submit ${networkParam} --tx-file ${txFilePath}`;
 };
 
 export async function transactionSubmitCommand(
@@ -22,19 +21,16 @@ export async function transactionSubmitCommand(
 ): Promise<string> {
   const tx = options.tx;
   const UID = uuid();
-  let parsedTx;
+  const txFilePAth = `tmp/tx_${UID}.signed`;
 
-  if (typeof tx === 'object') {
-    await fs.writeFile(`tmp/tx_${UID}.signed`, JSON.stringify(tx));
-    parsedTx = `tmp/tx_${UID}.signed`;
-  } else {
-    parsedTx = tx;
-  }
+  await fs.writeFile(
+    txFilePAth,
+    typeof tx === 'object' ? JSON.stringify(tx) : tx
+  );
 
-  await exec(buildCommand(options.cliPath, parsedTx, options.networkParam));
+  const stdout = await exec(
+    buildCommand(options.cliPath, txFilePAth, options.networkParam)
+  );
 
-  return await transactionIdCommand({
-    cliPath: options.cliPath,
-    options: { txFile: parsedTx },
-  });
+  return stdout.trim();
 }

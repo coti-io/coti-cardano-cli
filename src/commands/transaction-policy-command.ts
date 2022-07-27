@@ -18,7 +18,12 @@ export async function transactionPolicyidCommand(
   const UID = uuid();
   const filePath = `tmp/script_${UID}.json`;
 
-  await fs.writeFile(filePath, JSON.stringify(options.script));
+  await fs.writeFile(
+    filePath,
+    typeof options.script === 'object'
+      ? JSON.stringify(options.script)
+      : options.script
+  );
   const command = buildCommand(options.cliPath, filePath);
   await exec(command);
 

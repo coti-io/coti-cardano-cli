@@ -8,6 +8,7 @@ import {
   AddressInfo,
   CalculateMinFeeOptions,
   ConstructorOptions,
+  Eras,
   Pool,
   ProtocolParams,
   SignedTransaction,
@@ -25,7 +26,10 @@ import {
 import mainnetShelleyGenesis from './genesis-files/mainnet-shelley-genesis.json';
 import testnetShelleyGenesis from './genesis-files/testnet-shelley-genesis.json';
 import { JSONValue, Network } from './types';
-import {addressKeyGenCommand, AddressKeyGenRes} from './commands/address-key-gen-command';
+import {
+  addressKeyGenCommand,
+  AddressKeyGenRes,
+} from './commands/address-key-gen-command';
 import { queryUTXOCommand } from './commands/query-utxo-command';
 import { queryTipCommand } from './commands/query-tip-command';
 import { queryProtocolParamsCommand } from './commands/query-protocol-params-command';
@@ -47,7 +51,10 @@ import { transactionIdCommand } from './commands/transaction-id-command';
 import { transactionSubmitCommand } from './commands/transaction-submit-command';
 import { transactionViewCommand } from './commands/transaction-view-command';
 import { queryStakeCommand } from './commands/query-stakes-command';
-import {stakeAddressKeyGenCommand, StakeAddressKeyGenRes} from './commands/stake-address-key-gen-command';
+import {
+  stakeAddressKeyGenCommand,
+  StakeAddressKeyGenRes,
+} from './commands/stake-address-key-gen-command';
 import { stakeAddressBuildCommand } from './commands/stake-address-build-command';
 import { stakePoolIdCommand } from './commands/stake-pool-id-command';
 import { poolCommand } from './commands/pool-command';
@@ -55,10 +62,16 @@ import { stakeAddressRegistrationCommand } from './commands/stake-address-regist
 import { stakeAddressDeregistrationCommand } from './commands/stake-address-deregistration-command';
 import { stakeAddressDelegationCommand } from './commands/stake-address-delegation-command';
 import { stakeAddressKeyHashCommand } from './commands/stake-address-key-hash-command';
-import {nodeKeyGenKesCommand, NodeKeyGenKesRes} from './commands/node-key-gen-kes-command';
+import {
+  nodeKeyGenKesCommand,
+  NodeKeyGenKesRes,
+} from './commands/node-key-gen-kes-command';
 import { nodeKeyGenCommand } from './commands/node-key-gen-command';
 import { nodeIssueOpCertCommand } from './commands/node-issue-op-cert-command';
-import {nodeKeyGenVrfCommand, NodeKeyGenVrfRes} from './commands/node-key-gen-vrf-command';
+import {
+  nodeKeyGenVrfCommand,
+  NodeKeyGenVrfRes,
+} from './commands/node-key-gen-vrf-command';
 import { nodeNewCounterCommand } from './commands/node-new-counter-command';
 import { stakePoolMetadaCommand } from './commands/stake-pool-metadata-command';
 import { stakePoolRegistrationCommand } from './commands/stake-pool-registration-command';
@@ -69,7 +82,7 @@ import { ConvertAddressKeyCommand } from './commands/convert-address-key-command
 export type NullableApi = BlockFrostAPI | null;
 
 export class CardanoCli {
-  era = '';
+  era: string = Eras.ALONZO;
   network: Network = 'mainnet';
   cliPath = 'cardano-cli';
   networkParam = '';
@@ -82,7 +95,7 @@ export class CardanoCli {
     if (options) {
       options.socketPath &&
         (process.env['CARDANO_NODE_SOCKET_PATH'] = options.socketPath);
-      options.era && (this.era = '--' + options.era + '-era');
+      options.era && (this.era = `--${options.era}-era`);
       options.network && (this.network = options.network);
       options.cliPath && (this.cliPath = options.cliPath);
       options.testnetMagic && (this.testnetMagic = options.testnetMagic);
@@ -277,6 +290,7 @@ export class CardanoCli {
       cliPath: this.cliPath,
       networkParam: this.protocolParametersPath,
       protocolParameters,
+      era: this.era,
     });
   }
   async transactionCalculateMinRequiredUtxo(
@@ -290,6 +304,7 @@ export class CardanoCli {
       value,
       networkParam: this.networkParam,
       protocolParameters,
+      era: this.era,
     });
   }
   async transactionSubmit(tx: string): Promise<string> {
@@ -409,7 +424,7 @@ export class CardanoCli {
     });
   }
   async nodeKeyGenVRF(): Promise<NodeKeyGenVrfRes> {
-    return nodeKeyGenVrfCommand({ cliPath: this.cliPath});
+    return nodeKeyGenVrfCommand({ cliPath: this.cliPath });
   }
   async nodeNewCounter(
     counter: string,
