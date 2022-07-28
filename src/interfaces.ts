@@ -37,10 +37,8 @@ export interface ProtocolParams {
 
 export interface AddressBuildOptions {
   paymentVkey?: string;
-  paymentVkeyFilePath?: string;
   paymentScript?: string;
   stakeVkey?: string;
-  stakeVkeyFilePath?: string;
   stakeScript?: string;
 }
 

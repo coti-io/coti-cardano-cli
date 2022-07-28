@@ -1,10 +1,13 @@
 import { CardanoCli, ProtocolParams, Tip, Transaction, Utxo } from '../src';
+import {AddressKeyGenRes} from "../src/commands/address-key-gen-command";
 
 describe('Cardano cli test with blockfrost', () => {
   jest.setTimeout(50000);
   let cardanoCliInstance: CardanoCli;
   beforeAll(() => {
     cardanoCliInstance = new CardanoCli({
+      network: 'testnet',
+      testnetMagic: '1097911063',
       blockfrostApiKey: 'testneth3doUix8STTY7wQ4CIy6uf5unIzp1Sv3',
     });
   });
@@ -25,6 +28,26 @@ describe('Cardano cli test with blockfrost', () => {
       'addr_test1wzqpaq7vjn87ytud4k3p8ds9mmhzexdzvltyaqmp5jnq5pccup954';
     const utxos: Utxo[] = await cardanoCliInstance.queryUtxo(address);
     expect(utxos).toBeDefined();
+  });
+
+  it('Address Key Generate', async () => {
+    const keys: AddressKeyGenRes =
+        await cardanoCliInstance.addressKeyGen();
+    expect(keys).toBeDefined();
+    expect(keys.vkey).toBeDefined();
+    expect(keys.skey).toBeDefined();
+  });
+
+  it('Address build', async () => {
+    const keys: AddressKeyGenRes =
+        await cardanoCliInstance.addressKeyGen();
+    expect(keys).toBeDefined();
+    expect(keys.vkey).toBeDefined();
+    expect(keys.skey).toBeDefined();
+
+    const address: string = await cardanoCliInstance.addressBuild({paymentVkey: keys.vkey});
+    console.log(address)
+    expect(address).toBeDefined();
   });
 
   it('Build rawTx', async () => {

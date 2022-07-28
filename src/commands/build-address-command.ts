@@ -6,50 +6,38 @@ import { promises as fs } from 'fs';
 export interface BuildAddressCommand {
   cliPath: string;
   networkParam: string;
-  paymentVkey: string;
-  paymentVkeyPath: string;
-  paymentScript: string;
-  stakeVkey: string;
-  stakeVkeyPath: string;
-  stakeScript: string;
+  paymentVkey: string | undefined;
+  paymentScript: string | undefined;
+  stakeVkey: string | undefined;
+  stakeScript: string | undefined;
   filePath: string;
 }
 
 const buildCommand = (options: BuildAddressCommand): string => {
-  return `${options.cliPath} address build \
-                    ${
-                      options.paymentVkeyPath
-                        ? `--payment-verification-key-file ${options.paymentVkeyPath}`
-                        : ''
-                    } \
+  return `${options.cliPath} address build
                     ${
                       options.paymentVkey
-                        ? `--payment-verification-key ${options.paymentVkey}`
+                        ? `--payment-verification-key '${options.paymentVkey}'`
                         : ''
-                    } \
+                    }
                     ${
                       options.paymentScript
-                        ? `--payment-script-file ${options.paymentScript}`
+                        ? ` --payment-script-file ${options.paymentScript}`
                         : ''
-                    } \
+                    }
                     ${
                       options.stakeVkey
-                        ? `--stake-verification-key ${options.stakeVkey}`
+                        ? `--stake-verification-key '${options.stakeVkey}'`
                         : ''
-                    } \
-                    ${
-                      options.stakeVkeyPath
-                        ? `--stake-verification-key-file ${options.stakeVkeyPath}`
-                        : ''
-                    } \
+                    }
                     ${
                       options.stakeScript
                         ? `--stake-script-file ${options.stakeScript}`
                         : ''
-                    } \
-                    --out-file ${options.filePath} \
+                    }
+                    --out-file ${options.filePath}
                     ${options.networkParam}
-                `;
+                `.replace(/\n/g, " ");;
 };
 
 export async function buildAddressCommand(
@@ -58,18 +46,16 @@ export async function buildAddressCommand(
   networkParam: string
 ): Promise<string> {
   const UID = uuid();
-  let paymentVkeyPath = '';
-  let stakeVkeyPath = '';
+  let paymentVkey = '';
+  let stakeVkey = '';
   let paymentScriptPath = '';
   let stakeScriptPath = '';
 
-  if (options.paymentVkey) {
-    paymentVkeyPath = `tmp/${UID}.payment.vkey`;
-    await fs.writeFile(paymentVkeyPath, options.paymentVkey);
+  if(options.paymentVkey) {
+    paymentVkey = JSON.stringify(JSON.parse(options.paymentVkey));
   }
-  if (options.stakeVkey) {
-    stakeVkeyPath = `tmp/${UID}.stake.vkey`;
-    await fs.writeFile(stakeVkeyPath, options.stakeVkey);
+  if(options.stakeVkey) {
+    stakeVkey = JSON.stringify(JSON.parse(options.stakeVkey));
   }
   if (options.paymentScript) {
     paymentScriptPath = `tmp/${UID}.payment.vkey`;
@@ -85,19 +71,15 @@ export async function buildAddressCommand(
   const commandInput = {
     cliPath: cliPath,
     networkParam: networkParam,
-    paymentVkey: paymentVkeyPath,
-    paymentVkeyPath: options.paymentVkeyFilePath || '',
+    paymentVkey,
     paymentScript: paymentScriptPath,
-    stakeVkey: stakeVkeyPath,
-    stakeVkeyPath: options.stakeVkeyFilePath || '',
+    stakeVkey,
     stakeScript: stakeScriptPath,
     filePath,
   };
-
+  const command = buildCommand(commandInput)
   await exec(buildCommand(commandInput));
 
-  if (paymentVkeyPath !== '') await deleteFile(paymentVkeyPath);
-  if (stakeVkeyPath !== '') await deleteFile(stakeVkeyPath);
   if (paymentScriptPath !== '') await deleteFile(paymentScriptPath);
   if (stakeScriptPath !== '') await deleteFile(stakeScriptPath);
 
