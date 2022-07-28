@@ -25,10 +25,9 @@ export async function transactionPolicyidCommand(
       : options.script
   );
   const command = buildCommand(options.cliPath, filePath);
-  await exec(command);
+  const stdout = await exec(command);
 
-  const fileContent = readFile(filePath);
   await deleteFile(filePath);
 
-  return fileContent;
+  return stdout.toString().trim();
 }

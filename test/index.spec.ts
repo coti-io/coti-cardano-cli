@@ -46,8 +46,18 @@ describe('Cardano cli test with blockfrost', () => {
     expect(keys.skey).toBeDefined();
 
     const address: string = await cardanoCliInstance.addressBuild({paymentVkey: keys.vkey});
-    console.log(address)
     expect(address).toBeDefined();
+  });
+
+  it('Address key hash', async () => {
+    const keys: AddressKeyGenRes =
+        await cardanoCliInstance.addressKeyGen();
+    expect(keys).toBeDefined();
+    expect(keys.vkey).toBeDefined();
+    expect(keys.skey).toBeDefined();
+
+    const addressKeyHash: string = await cardanoCliInstance.addressKeyHash(keys.vkey);
+    expect(addressKeyHash).toBeDefined();
   });
 
   it('Build rawTx', async () => {

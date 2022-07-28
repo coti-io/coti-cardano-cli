@@ -344,3 +344,8 @@ export async function queryAddressUtxo(
     throw e;
   }
 }
+
+
+export const cleanJson = (json: string): string => {
+  return JSON.stringify(JSON.parse(json));
+}
