@@ -18,7 +18,7 @@ export interface BuildAddressCommand {
 const buildCommand = (options: BuildAddressCommand): string => {
   return `${options.cliPath} address build \
                     ${
-                      options.paymentVkey
+                      options.paymentVkeyPath
                         ? `--payment-verification-key-file ${options.paymentVkeyPath}`
                         : ''
                     } \
